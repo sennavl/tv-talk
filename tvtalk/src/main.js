@@ -4,10 +4,6 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import './css/main.css'
-import jquery from "./js/jquery.min.js"
-import skel from "./js/skel.min.js"
-import util from "./js/util.js"
-// import main from "./js/main.js"
 
 Vue.config.productionTip = false
 
