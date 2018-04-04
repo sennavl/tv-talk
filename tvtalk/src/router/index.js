@@ -1,28 +1,28 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import Home from '@/components/Home'
-import Callback from '@/components/Callback'
+import Vue from "vue";
+import Router from "vue-router";
+import Home from "@/components/Home";
+import Test from "@/components/Test";
 
-Vue.use(Router)
+Vue.use(Router);
 
 const router = new Router({
-  mode: 'history',
+  mode: "history",
   routes: [
     {
-      path: '/home',
-      name: 'Home',
+      path: "/home",
+      name: "Home",
       component: Home
     },
     {
-      path: '/callback',
-      name: 'Callback',
-      component: Callback
+      path: "/test",
+      name: "Test",
+      component: Test
     },
     {
-      path: '*',
-      redirect: '/home'
-	}
+      path: "*",
+      redirect: "/home"
+    }
   ]
-})
+});
 
-export default router
+export default router;
