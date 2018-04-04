@@ -4,8 +4,8 @@
 	  	<header id="header">
 			<div class="inner">
 				<!-- Logo -->
-				<a href="index.html" class="logo">
-					<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">Phantom</span>
+				<a class="logo">
+					<span class="title"><router-link to="/">TvTalk</router-link></span>
 				</a>
 				<!-- Nav -->
 				<nav>
@@ -20,10 +20,10 @@
 		<nav id="menu">
 			<h2>Menu</h2>
 			<ul>
-				<li><a href="index.html">Home</a></li>
+				<li><router-link to="/home">Home</router-link></li>
 				<li><a v-if="!authenticated" @click.stop.prevent="login()">Log in</a></li>
-				<li><a v-if="authenticated" @click.stop.prevent="logout()">Log out</a></li>
-				<li><a href="generic.html">Tempus etiam</a></li>
+				<li><a v-if="authenticated" @click.stop.prevent="logout()">Log out ({{profile.nickname ? profile.nickname : ''}})</a></li>
+				<li><router-link to="/profile">Profile</router-link></li>
 				<li><a href="generic.html">Consequat dolor</a></li>
 				<li><a href="elements.html">Elements</a></li>
 			</ul>
@@ -77,28 +77,30 @@
 </template>
 
 <script>
-import AuthService from './auth/AuthService'
+import AuthService from "./auth/AuthService";
 import axios from "axios";
 
-const auth = new AuthService()
+const auth = new AuthService();
 
-const { login, logout, authenticated, admin, authNotifier } = auth
+const { login, logout, authenticated, admin, authNotifier } = auth;
 
 export default {
-  name: 'app',
-  data () {
-    authNotifier.on('authChange', authState => {
-      this.authenticated = authState.authenticated
-      this.admin = authState.admin
-    })
+  name: "app",
+  data() {
+    authNotifier.on("authChange", authState => {
+      this.authenticated = authState.authenticated;
+      this.admin = authState.admin;
+    });
+
     return {
       auth,
       authenticated,
-	  admin,
-	  popularMovies: [],
+      admin,
+      popularMovies: [],
       errors: [],
-      baseUrlPoster: "https://image.tmdb.org/t/p/original"
-    }
+      baseUrlPoster: "https://image.tmdb.org/t/p/original",
+      profile: {}
+    };
   },
   created() {
     axios
@@ -112,18 +114,26 @@ export default {
       .catch(e => {
         this.errors.push(e);
       });
+
+      auth.getProfile((err, profile) => {
+        if (err) return console.log(err);
+        this.profile = profile;
+	  });
+	  auth.getProfile((err, profile) => {
+        if (err) return console.log(err);
+        this.profile = profile;
+      });
   },
   methods: {
     login,
     logout
   }
-}
+};
 </script>
 
 <style>
-
 .btn-margin {
-  margin-top: 7px
+  margin-top: 7px;
 }
 
 img {
