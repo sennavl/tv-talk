@@ -4,21 +4,20 @@
 		<div id="main">
 			<div class="inner">
 				<header>
-					<h1>This is Phantom, a free, fully responsive site<br />
-					template designed by <a @click="auth.login">HTML5 UP</a>.</h1>
-					<p>Etiam quis viverra lorem, in semper lorem. Sed nisl arcu euismod sit amet nisi euismod sed cursus arcu elementum ipsum arcu vivamus quis venenatis orci lorem ipsum et magna feugiat veroeros aliquam. Lorem ipsum dolor sit amet nullam dolore.</p>
+					<h1>TvTalk is a tv platform where you can find movies, series and discuss live event</h1>
 				</header>
+				<h2>Popular movies</h2>
 				<section class="tiles" v-if="popularMovies && popularMovies.length">
 					<article v-for="movie of popularMovies" :key="movie.id">
 						<span class="image">
 							<img :src=baseUrlPoster+movie.poster_path alt="" />
 						</span>
-						<a>
+						<router-link :to="{ name: 'details', params: { id: movie.id }}">
 							<h2>{{movie.title}}</h2>
 							<div class="content">
 								<p>{{movie.overview.substring(0, 75) + "..."}}</p>
 							</div>
-						</a>
+						</router-link>
 					</article>
 				</section>
 			</div>

@@ -13,7 +13,7 @@
 					</div>
 					<div>
 					<label><i class="glyphicon glyphicon-envelope"></i> Email</label>
-					<h3 class="email">{{ profile.email }}</h3>
+					<h3 class="email">{{ profile.name }}</h3>
 					</div>
 					<pre class="full-profile">{{ profile }}</pre>
 				</div>
