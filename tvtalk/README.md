@@ -1,10 +1,13 @@
 # tvtalk
 
-> A tv platform
+> A tv platform with live chatroom integration
 
 ## Build Setup
 
 ``` bash
+# navigate to the right directory
+cd tvtalk
+
 # install dependencies
 npm install
 
@@ -16,6 +19,15 @@ npm run build
 
 # build for production and view the bundle analyzer report
 npm run build --report
+
+# navigate to the right directory
+From root: cd server
+From tvalk: cd ../server
+
+# install dependencies
+npm install
+
+# run server
+node server.js (or nodemon server.js)
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).

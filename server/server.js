@@ -4,7 +4,7 @@ io.on('connection', (client) => {
 
 	client.on('chat', function(data){
         console.log(data);
-        //io.sockets.emit('chat', data);
+        io.sockets.emit('chat', data);
     });
 });
 io.listen(4113);
