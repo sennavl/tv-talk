@@ -1,25 +1,25 @@
 <template>
-	<div id="wrapper">
-		<div id="main">
-			<div class="inner">
-				<div class="panel-heading">
-					<h3>Profile</h3>
-				</div>
-				<div class="panel-body">
-					<img :src="profile.picture" class="avatar" alt="avatar">
-					<div>
-					<label><i class="glyphicon glyphicon-user"></i> Nickname</label>
-					<h3 class="nickname">{{ profile.nickname }}</h3>
-					</div>
-					<div>
-					<label><i class="glyphicon glyphicon-envelope"></i> Email</label>
-					<h3 class="email">{{ profile.name }}</h3>
-					</div>
-					<pre class="full-profile">{{ profile }}</pre>
-				</div>
-			</div>
-		</div>
-	</div>
+  <div id="wrapper">
+    <div id="main">
+      <div class="inner">
+        <div class="panel-heading">
+          <h3>Profile</h3>
+        </div>
+        <div class="panel-body">
+          <img :src="profile.picture" class="avatar" alt="avatar">
+          <div>
+          <label><i class="glyphicon glyphicon-user"></i> Nickname</label>
+          <h3 class="nickname">{{ profile.nickname }}</h3>
+          </div>
+          <div>
+          <label><i class="glyphicon glyphicon-envelope"></i> Email</label>
+          <h3 class="email">{{ profile.name }}</h3>
+          </div>
+          <pre class="full-profile">{{ profile }}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
