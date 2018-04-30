@@ -16,7 +16,6 @@
 		font-size: 100%;
 		font: inherit;
 		vertical-align: baseline;
-		max-width: 1350px;
     	margin: auto;
 	}
 
@@ -2762,7 +2761,7 @@
 			}
 
 				body:not(.is-touch) .tiles article:hover > .image:before {
-					background-color: #333333;
+					background-color: #000000;
 					opacity: 0.35;
 				}
 
@@ -2969,10 +2968,7 @@
 				padding: 4em 0 0.1em 0 ;
 			}
 
-				#header nav {
-					right: 0.5em;
-					top: 0.5em;
-				}
+
 
 					#header nav ul li a[href="#menu"]:before, #header nav ul li a[href="#menu"]:after {
 						background-size: 1.5em 1.5em;
@@ -3186,7 +3182,7 @@
 /* Footer */
 
 	#footer {
-		padding: 5em 0 6em 0 ;
+		padding: 5em 0 0 0 ;
 		background-color: #f6f6f6;
 	}
 
@@ -3338,7 +3334,6 @@
 		width: 100%;
 		max-width: 68em;
 		margin: 0 auto;
-		padding: 0 2.5em;
 	}
 
 		@media screen and (max-width: 736px) {
@@ -3349,7 +3344,7 @@
 
 		}
 
-		.customNav select {
+		.hamburgerMenu {
 			display: none;
 		}
 
@@ -3360,7 +3355,16 @@
 			.customNav ul {
 				display: none!important;
 			}
-			.customNav select {
-				display: inline-block;
+			.hamburgerMenu {
+				display: block;
+				position: absolute;
+				top: 40px;
+				right: 0px;
 			}
-		  }
+		}
+
+		@media screen and (max-width: 736px) {
+			.hamburgerMenu {
+				top: 3.5em;
+			}
+		}

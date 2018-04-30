@@ -16,21 +16,29 @@
             <li v-if="authenticated"><router-link to="/profile">Profile</router-link></li>
             <li><a href="generic.html">Movies</a></li>
             <li><a href="elements.html">Tv series</a></li>
-            <li><a href="elements.html">Live events</a></li>
+            <li><router-link to="/chatroom">Live events</router-link></li>
           </ul>
+        </nav>
 
-          <select>
-            <option value="" selected="selected">Select</option>
-            <option value="/">Home</option>
-            <option value="/collections/all">Books</option>
-            <option value="/blogs/five-simple-steps-blog">Blog</option>
-            <option value="/pages/about-us">About Us</option>
-            <option value="/pages/support">Support</option>
-          </select>
+        <nav class="hamburgerMenu">
+          <ul>
+            <li><a href="#menu">Menu</a></li>
+          </ul>
         </nav>
         <input type="text" placeholder="Search for a movie or a tv serie" v-model="searchTerm" @keyup.enter="search" />
       </div>
     </header>
+
+    <nav id="menu">
+      <h2>Menu</h2>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="generic.html">Ipsum veroeros</a></li>
+        <li><a href="generic.html">Tempus etiam</a></li>
+        <li><a href="generic.html">Consequat dolor</a></li>
+        <li><a href="elements.html">Elements</a></li>
+      </ul>
+    </nav>
 
     <router-view
         :auth="auth"

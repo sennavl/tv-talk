@@ -1,6 +1,7 @@
 <template>
   <div id="main">
     <div class="inner">
+      <a @click.stop.prevent="test">&lt; back</a>
       <h1>{{movie.title}}</h1>
       <span class="image main"><img src="images/pic13.jpg" alt="" /></span>
       {{movie}}
@@ -29,10 +30,17 @@ export default {
       .catch(e => {
         this.errors.push(e)
       })
+  },
+  methods: {
+    test () {
+      this.$router.go(-1)
+    }
   }
 }
 </script>
 
-<style>
-
+<style scoped>
+a {
+    cursor: pointer;
+}
 </style>

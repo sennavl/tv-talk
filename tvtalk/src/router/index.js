@@ -28,7 +28,14 @@ const router = new Router({
     {
       path: '/chatroom',
       name: 'Chatroom',
-      component: Chatroom
+      component: Chatroom,
+      beforeEnter: (to, from, next) => {
+        if (!auth.isAuthenticated()) {
+          next('/')
+        } else {
+          next()
+        }
+      }
     },
     {
       path: '/profile',
