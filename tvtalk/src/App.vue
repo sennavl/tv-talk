@@ -18,6 +18,15 @@
             <li><a href="elements.html">Tv series</a></li>
             <li><a href="elements.html">Live events</a></li>
           </ul>
+
+          <select>
+            <option value="" selected="selected">Select</option>
+            <option value="/">Home</option>
+            <option value="/collections/all">Books</option>
+            <option value="/blogs/five-simple-steps-blog">Blog</option>
+            <option value="/pages/about-us">About Us</option>
+            <option value="/pages/support">Support</option>
+          </select>
         </nav>
         <input type="text" placeholder="Search for a movie or a tv serie" v-model="searchTerm" @keyup.enter="search" />
       </div>
@@ -152,9 +161,7 @@ img {
 }
 
 .customNav {
-  margin-right: 6em;
-  padding-right: 4em;
-  max-width: 70%;
+  float: right;
 }
 
 .logo {

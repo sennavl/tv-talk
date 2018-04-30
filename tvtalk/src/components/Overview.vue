@@ -38,7 +38,7 @@ import axios from 'axios'
 // overviewpagina gebruiken om alles weer te geven, zowel films, series, collectie van films, ...
 // alhoewel films en series soms wel andere data properties hebben dus er zal wrs met een v-if gewerkt moeten worden om een van de twee te tonen ofzo
 export default {
-  props: ['auth', 'results'],
+  props: ['auth', 'results', 'pages', 'numberResults', 'getUrl'],
   data () {
     return {
       movies: [],
