@@ -126,11 +126,6 @@ export default {
       .catch(e => {
         this.errors.push(e)
       })
-
-    auth.getProfile((err, profile) => {
-      if (err) return console.log(err)
-      this.profile = profile
-    })
   },
   methods: {
     login,
@@ -154,6 +149,18 @@ export default {
         .catch(e => {
           this.errors.push(e)
         })
+    }
+  },
+  watch: {
+    authenticated (status) {
+      if (status) {
+        auth.getProfile((err, profile) => {
+          if (err) return console.log(err)
+          this.profile = profile
+        })
+      } else {
+        this.profile = {}
+      }
     }
   }
 }
