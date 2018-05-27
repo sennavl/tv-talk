@@ -4,7 +4,7 @@
     <div id="main">
       <div class="inner">
         <header>
-          <h1>TvTalk is a tv platform where you can find movies, series and discuss live event</h1>
+          <h1>Find movies, series and discuss live event</h1>
         </header>
         <section>
           <h2>Popular movies</h2>

@@ -1,7 +1,7 @@
 <template>
 
   <div id="wrapper">
-      <header id="header">
+    <header id="header">
       <div class="inner">
         <!-- Logo -->
         <a class="logo">
@@ -11,12 +11,13 @@
         <nav class="customNav">
           <ul>
             <li><router-link to="/home">Home</router-link></li>
-            <li><a v-if="!authenticated" @click.stop.prevent="login()">Log in</a></li>
-            <li><a v-if="authenticated" @click.stop.prevent="logout()">Log out {{profile.nickname ? '(' + profile.nickname + ')' : ''}}</a></li>
-            <li v-if="authenticated"><router-link to="/profile">Profile</router-link></li>
             <li><a href="generic.html">Movies</a></li>
             <li><a href="elements.html">Tv series</a></li>
             <li><router-link to="/chatroom">Live events</router-link></li>
+            <li>|</li>
+            <li><a v-if="!authenticated" @click.stop.prevent="login()">Log in</a></li>
+            <li><a v-if="authenticated" @click.stop.prevent="logout()">Log out {{profile.nickname ? '(' + profile.nickname + ')' : ''}}</a></li>
+            <li v-if="authenticated"><router-link to="/profile">Profile</router-link></li>
           </ul>
         </nav>
 
@@ -25,18 +26,23 @@
             <li><a href="#menu">Menu</a></li>
           </ul>
         </nav>
-        <input type="text" placeholder="Search for a movie or a tv serie" v-model="searchTerm" @keyup.enter="search" />
+        <div class="search-bar">
+            <i class="material-icons">search</i>
+            <input type="text" placeholder="Search for a movie or a tv serie" v-model="searchTerm" @keyup.enter="search" />
+        </div>
       </div>
     </header>
 
     <nav id="menu">
       <h2>Menu</h2>
       <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="generic.html">Ipsum veroeros</a></li>
-        <li><a href="generic.html">Tempus etiam</a></li>
-        <li><a href="generic.html">Consequat dolor</a></li>
-        <li><a href="elements.html">Elements</a></li>
+        <li><router-link to="/home">Home</router-link></li>
+        <li><a href="generic.html">Movies</a></li>
+        <li><a href="elements.html">Tv series</a></li>
+        <li><router-link to="/chatroom">Live events</router-link></li>
+        <li><a v-if="!authenticated" @click.stop.prevent="login()">Log in</a></li>
+        <li><a v-if="authenticated" @click.stop.prevent="logout()">Log out {{profile.nickname ? '(' + profile.nickname + ')' : ''}}</a></li>
+        <li v-if="authenticated"><router-link to="/profile">Profile</router-link></li>
       </ul>
     </nav>
 
@@ -185,5 +191,13 @@ img {
 
 li > a {
   cursor: pointer;
+}
+
+.search-bar {
+    display: flex;
+}
+
+.search-bar i {
+    margin-right: 10px;
 }
 </style>
