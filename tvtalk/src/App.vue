@@ -31,7 +31,7 @@
             <input type="text" placeholder="Search for a movie or a tv serie" v-model="searchTerm" @keyup.enter="search" />
         </div>
         <div class="livesearch">
-            <p v-if="searchResults.length > 0 && searchTerm.length > 0"  v-for="searchResult of searchResults" :key="searchResult.id" >
+            <p v-if="searchResults.length > 0 && searchTerm.length > 0"  v-for="searchResult of searchResults" :key="searchResult.id" @click="redirect(searchResult.media_type, searchResult.id)">
               {{ searchResult.title || searchResult.name }}<span class="media-type"> in {{ searchResult.media_type === 'movie' ? 'movies' : 'TV series' }}</span>
             </p>
             <p v-if="searchResults.length === 0 && searched && searchTerm.length > 0">
@@ -137,7 +137,6 @@ export default {
         'https://api.themoviedb.org/3/movie/popular?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US&page=1'
       )
       .then(response => {
-        // console.log(response.data.results);
         this.popularMovies = response.data.results.splice(0, 3)
       })
       .catch(e => {
@@ -147,6 +146,17 @@ export default {
   methods: {
     login,
     logout,
+    redirect (mediaType, id) {
+      this.searchTerm = ''
+      this.searchResults = []
+      if (mediaType === 'movie') {
+        console.log('movie')
+        this.$router.push({ name: 'movieDetails', params: { id } })
+      } else if (mediaType === 'tv') {
+        console.log('tv')
+        this.$router.push({ name: 'seriesDetails', params: { id } })
+      }
+    },
     search () {
       const searchMoviesUrl = `https://api.themoviedb.org/3/search/multi?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US&query=${this.searchTerm}&page=1`
       axios
@@ -174,10 +184,8 @@ export default {
             `https://api.themoviedb.org/3/search/multi?api_key=09767dbf40d373b1e78aa80db4deefc9&query=${searchTerm}&page=1`
           )
           .then(response => {
-            console.log('allo')
             const filteredSearchResults = response.data.results.filter(e => e.media_type === 'movie' || e.media_type === 'tv')
-            console.log(filteredSearchResults)
-            this.searchResults = filteredSearchResults
+            this.searchResults = filteredSearchResults.slice(0, 4)
             this.searched = true
           })
           .catch(e => {
@@ -240,18 +248,21 @@ li > a {
 
 .livesearch .media-type {
   color: #AAAAAA;
+  font-style: italic;
 }
 
 .livesearch p {
   border-bottom: 1px solid #c9c9c9;
-  padding: 0.5em 0 0 0;
+  padding: 0.5em 0 0 0.5em;
   margin: 0;
 }
 
 .livesearch p:hover {
-  background-color: #f2849e;
+  background-color: #CCCCCC;
+  cursor: pointer;
+  color: white;
   .media-type {
-    color:white
+    color: white;
   }
 }
 

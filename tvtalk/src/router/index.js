@@ -3,7 +3,8 @@ import Router from 'vue-router'
 import Home from '@/components/Home'
 import Test from '@/components/Test'
 import Profile from '@/components/Profile'
-import Details from '@/components/Details'
+import MovieDetails from '@/components/MovieDetails'
+import SeriesDetails from '@/components/SeriesDetails'
 import Chatroom from '@/components/Chatroom'
 import Overview from '@/components/Overview'
 import AuthService from './../auth/AuthService'
@@ -52,13 +53,13 @@ const router = new Router({
     {
       path: '/movies/:id/details',
       name: 'movieDetails',
-      component: Details,
+      component: MovieDetails,
       props: true
     },
     {
       path: '/movies/:id/details',
       name: 'seriesDetails',
-      component: Details,
+      component: SeriesDetails,
       props: true
     },
     {
