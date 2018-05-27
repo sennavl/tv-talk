@@ -30,6 +30,14 @@
             <i class="material-icons">search</i>
             <input type="text" placeholder="Search for a movie or a tv serie" v-model="searchTerm" @keyup.enter="search" />
         </div>
+        <div class="livesearch">
+            <p v-if="searchResults.length > 0 && searchTerm.length > 0"  v-for="searchResult of searchResults" :key="searchResult.id" >
+              {{ searchResult.title || searchResult.name }}<span class="media-type"> in {{ searchResult.media_type === 'movie' ? 'movies' : 'TV series' }}</span>
+            </p>
+            <p v-if="searchResults.length === 0 && searched && searchTerm.length > 0">
+              No results
+            </p>
+        </div>
       </div>
     </header>
 
@@ -117,7 +125,10 @@ export default {
       errors: [],
       baseUrlPoster: 'https://image.tmdb.org/t/p/original',
       profile: {},
-      searchTerm: ''
+      searchTerm: '',
+      searchResults: [],
+      timeout: null,
+      searched: false
     }
   },
   created () {
@@ -155,6 +166,24 @@ export default {
         .catch(e => {
           this.errors.push(e)
         })
+    },
+    searchMoviesAndSeries (searchTerm) {
+      if (searchTerm !== null && searchTerm.length > 0) {
+        axios
+          .get(
+            `https://api.themoviedb.org/3/search/multi?api_key=09767dbf40d373b1e78aa80db4deefc9&query=${searchTerm}&page=1`
+          )
+          .then(response => {
+            console.log('allo')
+            const filteredSearchResults = response.data.results.filter(e => e.media_type === 'movie' || e.media_type === 'tv')
+            console.log(filteredSearchResults)
+            this.searchResults = filteredSearchResults
+            this.searched = true
+          })
+          .catch(e => {
+            this.errors.push(e)
+          })
+      }
     }
   },
   watch: {
@@ -167,12 +196,16 @@ export default {
       } else {
         this.profile = {}
       }
+    },
+    searchTerm: function (val, oldVal) {
+      clearTimeout(this.timeout)
+      this.timeout = setTimeout(() => { this.searchMoviesAndSeries(val) }, 1000)
     }
   }
 }
 </script>
 
-<style>
+<style lang="less" rel="stylesheet/less" type="text/less">
 .btn-margin {
   margin-top: 7px;
 }
@@ -199,5 +232,33 @@ li > a {
 
 .search-bar i {
     margin-right: 10px;
+}
+
+.livesearch {
+    margin-left: 35px;
+}
+
+.livesearch .media-type {
+  color: #AAAAAA;
+}
+
+.livesearch p {
+  border-bottom: 1px solid #c9c9c9;
+  padding: 0.5em 0 0 0;
+  margin: 0;
+}
+
+.livesearch p:hover {
+  background-color: #f2849e;
+  .media-type {
+    color:white
+  }
+}
+
+@media screen and (max-width: 736px) {
+    .livesearch {
+        margin-top: 8px;
+        margin-left: 35px;
+    }
 }
 </style>
