@@ -1,34 +1,24 @@
 <template>
 <div id="main">
   <div class="inner">
-    <header>
-        <h1>Overview</h1>
-        {{ results }}
-    </header>
-    <section>
-      <h2>Title</h2>
-      <div class="6u 12u$(xsmall)">
-        <input type="text" placeholder="Search" v-model="searchTerm" />
-        <div id="livesearch">
-          <p v-if="suggestions.length > 0"  v-for="suggestion of suggestions" :key="suggestion.id" @click="updateSearch(suggestion)">
-            {{ suggestion.name || suggestion }}
-          </p>
-        </div>
+    <h1>Overview</h1>
+    <div class="filter">
+      <p>Release date</p>
+      <input type="number" name="demo-name" id="demo-name" value="" placeholder="Name" />
+      <p>Genres</p>
+      <div class="select-wrapper">
+        <select name="demo-category" id="demo-category">
+          <option value="">- Category -</option>
+          <option value="1">Manufacturing</option>
+          <option value="1">Shipping</option>
+          <option value="1">Administration</option>
+          <option value="1">Human Resources</option>
+        </select>
       </div>
-      <section class="tiles">
-          <article>
-              <span class="image">
+    </div>
+    <div class="movies-overview">
 
-              </span>
-              <a href="generic.html">
-                  <h2>Magna</h2>
-                  <div class="content">
-                      <p>Sed nisl arcu euismod sit amet nisi lorem etiam dolor veroeros et feugiat.</p>
-                  </div>
-              </a>
-          </article>
-      </section>
-    </section>
+    </div>
   </div>
 </div>
 </template>
@@ -82,17 +72,13 @@ export default {
 </script>
 
 <style scoped>
-  #livesearch {
-    border: 1px solid #A5ACB2
-  }
+.filter p {
+  font-weight: bold;
+  margin: 0;
+}
 
-  p {
-    margin: 0px;
-    border-bottom: 1px solid #A5ACB2;
-    cursor: pointer;
-  }
-
-  p:hover {
-    background-color: #f2849e;
-  }
+.filter {
+  width: 250px;
+  margin: 0;
+}
 </style>

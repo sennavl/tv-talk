@@ -11,7 +11,7 @@
         <nav class="customNav">
           <ul>
             <li><router-link to="/home">Home</router-link></li>
-            <li><a href="generic.html">Movies</a></li>
+            <li><router-link to="/overview">Movies</router-link></li>
             <li><a href="elements.html">Tv series</a></li>
             <li><router-link to="/chatroom">Live events</router-link></li>
             <li>|</li>
