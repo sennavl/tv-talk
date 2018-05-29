@@ -21,17 +21,27 @@
       <div class="movies-overview">
         <h2>{{ total_results }} results</h2>
         <div class="movie-overview" v-for="movie of movies" :key="movie.id">
-          <img :src=baseUrlPoster+movie.poster_path alt="">
+          <router-link :to="{ name: 'movieDetails', params: { id: movie.id }}"><img :src=baseUrlPoster+movie.poster_path alt=""></router-link>
           <div class="movie-content">
             <div class="title-rating">
               <h3>{{ movie.title }}</h3>
               <p>7.9 <span class="icon-subtitle"><i class="material-icons">start_rate</i></span></p>
             </div>
-            <p v-if="movie.overview.length > 180">{{ movie.overview.substring(0, 180) + '...' }}</p>
+            <p v-if="movie.overview.length > 177">{{ movie.overview.substring(0, 177) + '...' }}</p>
             <p v-else>{{ movie.overview }}</p>
             <p><span class="subtitle-overview">Release date: </span>{{ movie.release_date }}</p>
             <p><span class="subtitle-overview">Genres: </span>{{ getGenres(movie) }}</p>
+            <router-link class="button" :to="{ name: 'movieDetails', params: { id: movie.id }}">See more</router-link>
           </div>
+        </div>
+        <div class="pagination">
+          <ul>
+            <li><a href="" class="not-active">1</a></li>
+            <li><a href="">2</a></li>
+            <li><a href="">3</a></li>
+            <li><a href="">4</a></li>
+            <li><a href="">5</a></li>
+          </ul>
         </div>
       </div>
     </div>
@@ -54,7 +64,8 @@ export default {
       suggestions: [],
       baseUrlPoster: 'https://image.tmdb.org/t/p/w342',
       total_results: 0,
-      genres: []
+      genres: [],
+      currentPage: 1
     }
   },
   watch: {
@@ -126,18 +137,31 @@ export default {
 .movies-overview {
   width: 75%;
   margin: 0;
+
+  .pagination {
+    margin: auto;
+    width: 100%;
+    ul {
+      list-style: none;
+    }
+    li {
+      display: inline-block;
+    }
+  }
 }
 
 .movie-overview {
   display: flex;
-  border-bottom: 1px rgb(201, 201, 201) solid;
-  padding-bottom: 20px;
+  padding: 10px;
+  border: 1px solid rgb(201, 201, 201);
+  border-radius: 15px;
   margin-bottom: 20px;
+  background-color: rgb(240, 240, 240);
 
   img {
     margin: 0;
-    height: 300px;
-    width: 200px;
+    height: 350px;
+    width: 233px;
   }
 
   .movie-content {
@@ -157,6 +181,18 @@ export default {
     .subtitle-overview {
       font-weight: bold;
     }
+
+    a {
+      font-size: 0.7em;
+      float: right;
+    }
   }
+}
+
+.not-active {
+  pointer-events: none;
+  cursor: default;
+  text-decoration: none;
+  color: black;
 }
 </style>
