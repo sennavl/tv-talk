@@ -26,10 +26,12 @@
             <li><a href="#menu">Menu</a></li>
           </ul>
         </nav>
+
         <div class="search-bar">
             <i class="material-icons">search</i>
             <input type="text" placeholder="Search for a movie or a tv serie" v-model="searchTerm" @keyup.enter="search" />
         </div>
+
         <div class="livesearch">
             <p v-if="searchResults.length > 0 && searchTerm.length > 0"  v-for="searchResult of searchResults" :key="searchResult.id" @click="redirect(searchResult.media_type, searchResult.id)">
               {{ searchResult.title || searchResult.name }}<span class="media-type"> in {{ searchResult.media_type === 'movie' ? 'movies' : 'TV series' }}</span>
