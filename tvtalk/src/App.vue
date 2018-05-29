@@ -237,7 +237,8 @@ li > a {
 }
 
 .search-bar {
-    display: flex;
+  display: flex;
+  margin-bottom: 20px;
 }
 
 .search-bar i {

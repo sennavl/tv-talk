@@ -1643,7 +1643,7 @@
 	body, input, select, textarea {
 		color: #585858;
 		font-family: "Source Sans Pro", Helvetica, sans-serif;
-		font-size: 16pt;
+		font-size: 14pt;
 		font-weight: 300;
 		line-height: 1.75;
 	}
@@ -1724,8 +1724,7 @@
 		font-weight: 900;
 		line-height: 1.5;
 		margin: 0 0 2em 0;
-		text-transform: uppercase;
-		letter-spacing: 0.35em;
+		letter-spacing: 0.1em;
 	}
 
 		h2 a, h3 a, h4 a, h5 a, h6 a {
@@ -2868,7 +2867,6 @@
 			letter-spacing: 0.35em;
 			margin: 0 0 2.5em 0;
 			text-decoration: none;
-			text-transform: uppercase;
 			display: inline-block;
 		}
 
