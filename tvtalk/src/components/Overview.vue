@@ -36,11 +36,11 @@
         </div>
         <div class="pagination">
           <ul>
-            <li><a href="" class="not-active">1</a></li>
-            <li><a href="">2</a></li>
+            <li><router-link :to="{ name: 'overview', query: { page: 1 }}" :class="currentPage === 1 ? 'not-active' : ''">1</router-link></li>
+            <li><router-link :to="{ name: 'overview', query: { page: 2 }}" :class="currentPage === 2 ? 'not-active' : ''">2</router-link></li>
             <li><a href="">3</a></li>
             <li><a href="">4</a></li>
-            <li><a href="">5</a></li>
+            <li><router-link :to="{ name: 'overview', query: { page: getTotalPages }}" :class="currentPage === getTotalPages ? 'not-active' : ''">{{ getTotalPages }}</router-link></li>
           </ul>
         </div>
       </div>
@@ -65,16 +65,32 @@ export default {
       baseUrlPoster: 'https://image.tmdb.org/t/p/w342',
       total_results: 0,
       genres: [],
-      currentPage: 1
+      currentPage: 1,
+      total_pages: 0
+    }
+  },
+  computed: {
+    getTotalPages () {
+      return this.total_pages >= 1000 ? 1000 : this.total_pages
     }
   },
   watch: {
     searchTerm: function (val, oldVal) {
       clearTimeout(this.timeout)
       this.timeout = setTimeout(() => { this.getMovies(val) }, 1000)
+    },
+    '$route': {
+      deep: true,
+      handler: function (refreshPage) {
+        this.currentPage = refreshPage.query.page
+        this.getMovies()
+      }
     }
   },
   created () {
+    if (this.$route.query.page) {
+      this.currentPage = this.$route.query.page
+    }
     this.getGenresFromDatabase()
     this.getMovies()
   },
@@ -91,11 +107,12 @@ export default {
     getMovies () {
       axios
         .get(
-          'https://api.themoviedb.org/3/discover/movie?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US&sort_by=popularity.desc&page=1'
+          `https://api.themoviedb.org/3/discover/movie?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US&sort_by=popularity.desc&page=${this.currentPage}`
         )
         .then(response => {
           this.movies = response.data.results
           this.total_results = response.data.total_results
+          this.total_pages = response.data.total_pages
         })
         .catch(e => {
           this.errors.push(e)
@@ -139,13 +156,12 @@ export default {
   margin: 0;
 
   .pagination {
-    margin: auto;
-    width: 100%;
+
     ul {
       list-style: none;
+      display: flex;
     }
     li {
-      display: inline-block;
     }
   }
 }
@@ -158,6 +174,10 @@ export default {
   margin-bottom: 20px;
   background-color: rgb(240, 240, 240);
 
+  a {
+    margin: 0;
+  }
+
   img {
     margin: 0;
     height: 350px;
@@ -166,6 +186,7 @@ export default {
 
   .movie-content {
     margin: 0 0 0 12px;
+    width: 100%;
 
     .title-rating {
       display: flex;

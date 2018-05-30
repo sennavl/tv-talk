@@ -51,8 +51,8 @@
         <li><a href="elements.html">Tv series</a></li>
         <li><router-link to="/chatroom">Live events</router-link></li>
         <li><a v-if="!authenticated" @click.stop.prevent="login()">Log in</a></li>
-        <li><a v-if="authenticated" @click.stop.prevent="logout()">Log out {{profile.nickname ? '(' + profile.nickname + ')' : ''}}</a></li>
         <li v-if="authenticated"><router-link to="/profile">Profile</router-link></li>
+        <li><a v-if="authenticated" @click.stop.prevent="logout()">Log out {{profile.nickname ? '(' + profile.nickname + ')' : ''}}</a></li>
       </ul>
     </nav>
 
