@@ -6,7 +6,7 @@
       <div class="filter">
         <h2>Filter</h2>
         <p>Release date</p>
-        <input type="number" name="demo-name" id="demo-name" value="" placeholder="Name" />
+        <input type="date" class="date-input" v-model="startDate" placeholder="Name" @blur="getMovies()" />
         <p>Genres</p>
         <div class="select-wrapper">
           <select name="demo-category" id="demo-category">
@@ -36,11 +36,14 @@
         </div>
         <div class="pagination">
           <ul>
-            <li><router-link :to="{ name: 'overview', query: { page: 1 }}" :class="currentPage === 1 ? 'not-active' : ''">1</router-link></li>
-            <li>...</li>
-            <li v-for="page of other_pages" :key="page.id"><router-link :to="{ name: 'overview', query: { page } }" :class="currentPage === page ? 'not-active' : ''">{{ page }}</router-link></li>
-            <li>...</li>
-            <li><router-link :to="{ name: 'overview', query: { page: getTotalPages }}" :class="currentPage === getTotalPages ? 'not-active' : ''">{{ getTotalPages }}</router-link></li>
+            <li><router-link :to="{ name: 'overview', query: { page: 1 }}" :class="currentPage == 1 ? 'not-active' : ''">1</router-link></li>
+            <li v-if="total_pages > 4">...</li>
+            <li v-if="total_pages > 4" v-for="page of other_pages" :key="page.id"><router-link :to="{ name: 'overview', query: { page } }" :class="currentPage === page ? 'not-active' : ''">{{ page }}</router-link></li>
+            <li v-if="total_pages === 3"><router-link :to="{ name: 'overview', query: { page: 2 } }" :class="currentPage == 2 ? 'not-active' : ''">{{ 2 }}</router-link></li>
+            <li v-if="total_pages === 4"><router-link :to="{ name: 'overview', query: { page: 2 } }" :class="currentPage == 2 ? 'not-active' : ''">{{ 2 }}</router-link></li>
+            <li v-if="total_pages === 4"><router-link :to="{ name: 'overview', query: { page: 3 } }" :class="currentPage == 3 ? 'not-active' : ''">{{ 3 }}</router-link></li>
+            <li v-if="total_pages > 4">...</li>
+            <li><router-link v-if="getTotalPages > 1" :to="{ name: 'overview', query: { page: getTotalPages }}" :class="currentPage == getTotalPages ? 'not-active' : ''">{{ getTotalPages }}</router-link></li>
           </ul>
         </div>
       </div>
@@ -67,7 +70,9 @@ export default {
       genres: [],
       currentPage: 1,
       total_pages: 0,
-      other_pages: [2, 3, 4]
+      other_pages: [2, 3, 4],
+      startDate: '',
+      endDate: ''
     }
   },
   computed: {
@@ -80,7 +85,7 @@ export default {
       deep: true,
       handler: function (refreshPage) {
         this.currentPage = refreshPage.query.page
-        if (this.currentPage - 1 > 2) {
+        if (this.currentPage - 1 > 2 && this.currentPage - 1 < this.total_pages) {
           this.other_pages = [this.currentPage - 1, this.currentPage, parseInt(this.currentPage) + 1]
         }
         this.getMovies()
@@ -91,7 +96,7 @@ export default {
     if (this.$route.query.page) {
       this.currentPage = this.$route.query.page
     }
-    if (this.currentPage - 1 > 2) {
+    if (this.currentPage - 1 > 2 && this.currentPage - 1 < this.total_pages) {
       this.other_pages = [this.currentPage - 1, this.currentPage, parseInt(this.currentPage) + 1]
     }
     this.getGenresFromDatabase()
@@ -120,7 +125,7 @@ export default {
     getMovies () {
       axios
         .get(
-          `https://api.themoviedb.org/3/discover/movie?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US&sort_by=popularity.desc&page=${this.currentPage}`
+          `https://api.themoviedb.org/3/discover/movie?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US&sort_by=popularity.desc&page=${this.currentPage}&primary_release_date.gte=${this.startDate}&primary_release_date.lte=${this.endDate}`
         )
         .then(response => {
           this.movies = response.data.results
@@ -231,5 +236,11 @@ export default {
   color: black;
   padding: 0px 10px 0px 10px;
   background-color: rgb(201, 201, 201);
+}
+
+.date-input {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid rgb(201, 201, 201);
 }
 </style>

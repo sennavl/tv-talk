@@ -58,14 +58,14 @@
         </div>
         <div class="pagination">
           <ul>
-            <li><router-link :to="{ name: 'search', query: { page: 1, q: searchTerm }}" :class="currentPage === 1 ? 'not-active' : ''">1</router-link></li>
+            <li><router-link :to="{ name: 'search', query: { page: 1, q: searchTerm }}" :class="currentPage == 1 ? 'not-active' : ''">1</router-link></li>
             <li v-if="total_pages > 4">...</li>
             <li v-if="total_pages > 4" v-for="page of other_pages" :key="page.id"><router-link :to="{ name: 'search', query: { page, q: searchTerm } }" :class="currentPage === page ? 'not-active' : ''">{{ page }}</router-link></li>
-            <li v-if="total_pages === 3"><router-link :to="{ name: 'search', query: { page: 2, q: searchTerm } }" :class="currentPage === 2 ? 'not-active' : ''">{{ 2 }}</router-link></li>
-            <li v-if="total_pages === 4"><router-link :to="{ name: 'search', query: { page: 2, q: searchTerm } }" :class="currentPage === 2 ? 'not-active' : ''">{{ 2 }}</router-link></li>
-            <li v-if="total_pages === 4"><router-link :to="{ name: 'search', query: { page: 3, q: searchTerm } }" :class="currentPage === 3 ? 'not-active' : ''">{{ 3 }}</router-link></li>
+            <li v-if="total_pages === 3"><router-link :to="{ name: 'search', query: { page: 2, q: searchTerm } }" :class="currentPage == 2 ? 'not-active' : ''">{{ 2 }}</router-link></li>
+            <li v-if="total_pages === 4"><router-link :to="{ name: 'search', query: { page: 2, q: searchTerm } }" :class="currentPage == 2 ? 'not-active' : ''">{{ 2 }}</router-link></li>
+            <li v-if="total_pages === 4"><router-link :to="{ name: 'search', query: { page: 3, q: searchTerm } }" :class="currentPage == 3 ? 'not-active' : ''">{{ 3 }}</router-link></li>
             <li v-if="total_pages > 4">...</li>
-            <li><router-link v-if="getTotalPages > 1" :to="{ name: 'search', query: { page: getTotalPages, q: searchTerm }}" :class="currentPage === getTotalPages ? 'not-active' : ''">{{ getTotalPages }}</router-link></li>
+            <li><router-link v-if="getTotalPages > 1" :to="{ name: 'search', query: { page: getTotalPages, q: searchTerm }}" :class="currentPage == getTotalPages ? 'not-active' : ''">{{ getTotalPages }}</router-link></li>
           </ul>
         </div>
       </div>
