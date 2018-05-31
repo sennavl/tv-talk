@@ -1,22 +1,14 @@
 <template>
 <div id="main">
   <div class="inner" v-if="movies">
-    <h1>Overview - movies</h1>
+    <h1>Search results - {{ searchTerm }}</h1>
     <div class="content">
       <div class="filter">
         <h2>Filter</h2>
-        <p>Release date</p>
-        <input type="number" name="demo-name" id="demo-name" value="" placeholder="Name" />
-        <p>Genres</p>
-        <div class="select-wrapper">
-          <select name="demo-category" id="demo-category">
-            <option value="">- Category -</option>
-            <option value="1">Manufacturing</option>
-            <option value="1">Shipping</option>
-            <option value="1">Administration</option>
-            <option value="1">Human Resources</option>
-          </select>
-        </div>
+        <ul>
+          <li>Movies - {{ total_results }}</li>
+          <li>Tv series</li>
+        </ul>
       </div>
       <div class="movies-overview">
         <h2>{{ total_results }} results</h2>
@@ -28,19 +20,22 @@
               <p>7.9 <span class="icon-subtitle"><i class="material-icons">start_rate</i></span></p>
             </div>
             <p v-if="movie.overview.length > 177">{{ movie.overview.substring(0, 177) + '...' }}</p>
-            <p v-else>{{ movie.overview }}</p>
-            <p><span class="subtitle-overview">Release date: </span>{{ movie.release_date }}</p>
-            <p><span class="subtitle-overview">Genres: </span>{{ getGenres(movie) }}</p>
+            <p v-else>{{ movie.overview || 'No description available yet' }}</p>
+            <p><span class="subtitle-overview">Release date: </span>{{ movie.release_date || 'No release date available yet' }}</p>
+            <p><span class="subtitle-overview">Genres: </span>{{ getGenres(movie) || 'No genres available yet' }}</p>
             <router-link class="button" :to="{ name: 'movieDetails', params: { id: movie.id }}">See more</router-link>
           </div>
         </div>
         <div class="pagination">
           <ul>
-            <li><router-link :to="{ name: 'overview', query: { page: 1 }}" :class="currentPage === 1 ? 'not-active' : ''">1</router-link></li>
-            <li>...</li>
-            <li v-for="page of other_pages" :key="page.id"><router-link :to="{ name: 'overview', query: { page } }" :class="currentPage === page ? 'not-active' : ''">{{ page }}</router-link></li>
-            <li>...</li>
-            <li><router-link :to="{ name: 'overview', query: { page: getTotalPages }}" :class="currentPage === getTotalPages ? 'not-active' : ''">{{ getTotalPages }}</router-link></li>
+            <li><router-link :to="{ name: 'search', query: { page: 1, q: searchTerm }}" :class="currentPage === 1 ? 'not-active' : ''">1</router-link></li>
+            <li v-if="total_pages > 4">...</li>
+            <li v-if="total_pages > 4" v-for="page of other_pages" :key="page.id"><router-link :to="{ name: 'search', query: { page, q: searchTerm } }" :class="currentPage === page ? 'not-active' : ''">{{ page }}</router-link></li>
+            <li v-if="total_pages === 3"><router-link :to="{ name: 'search', query: { page: 2, q: searchTerm } }" :class="currentPage === 2 ? 'not-active' : ''">{{ 2 }}</router-link></li>
+            <li v-if="total_pages === 4"><router-link :to="{ name: 'search', query: { page: 2, q: searchTerm } }" :class="currentPage === 2 ? 'not-active' : ''">{{ 2 }}</router-link></li>
+            <li v-if="total_pages === 4"><router-link :to="{ name: 'search', query: { page: 3, q: searchTerm } }" :class="currentPage === 3 ? 'not-active' : ''">{{ 3 }}</router-link></li>
+            <li v-if="total_pages > 4">...</li>
+            <li><router-link :to="{ name: 'search', query: { page: getTotalPages, q: searchTerm }}" :class="currentPage === getTotalPages ? 'not-active' : ''">{{ getTotalPages }}</router-link></li>
           </ul>
         </div>
       </div>
@@ -79,23 +74,27 @@ export default {
     '$route': {
       deep: true,
       handler: function (refreshPage) {
-        this.currentPage = refreshPage.query.page
-        if (this.currentPage - 1 > 2) {
+        this.currentPage = parseInt(refreshPage.query.page)
+        if (this.currentPage - 1 > 2 && this.currentPage - 1 < this.total_pages) {
           this.other_pages = [this.currentPage - 1, this.currentPage, parseInt(this.currentPage) + 1]
         }
-        this.getMovies()
+        this.searchTerm = refreshPage.query.q
+        this.searchMovies()
       }
     }
   },
   created () {
     if (this.$route.query.page) {
-      this.currentPage = this.$route.query.page
+      this.currentPage = parseInt(this.$route.query.page)
     }
-    if (this.currentPage - 1 > 2) {
+    if (this.currentPage - 1 > 2 && this.currentPage - 1 < this.total_pages) {
       this.other_pages = [this.currentPage - 1, this.currentPage, parseInt(this.currentPage) + 1]
     }
     this.getGenresFromDatabase()
-    this.getMovies()
+    if (this.$route.query.q) {
+      this.searchTerm = this.$route.query.q
+      this.searchMovies()
+    }
   },
   methods: {
     checkCurrentPage (num) {
@@ -117,20 +116,6 @@ export default {
           this.genres = response.data.genres
         })
     },
-    getMovies () {
-      axios
-        .get(
-          `https://api.themoviedb.org/3/discover/movie?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US&sort_by=popularity.desc&page=${this.currentPage}`
-        )
-        .then(response => {
-          this.movies = response.data.results
-          this.total_results = response.data.total_results
-          this.total_pages = response.data.total_pages
-        })
-        .catch(e => {
-          this.errors.push(e)
-        })
-    },
     updateSearch (search) {
       this.searchTerm = search.name
     },
@@ -143,6 +128,21 @@ export default {
         }
       }
       return genresString
+    },
+    searchMovies () {
+      const searchMoviesUrl = `https://api.themoviedb.org/3/search/movie?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US&query=${this.searchTerm}&page=${this.currentPage}`
+      axios
+        .get(
+          searchMoviesUrl
+        )
+        .then(response => {
+          this.movies = response.data.results
+          this.total_results = response.data.total_results
+          this.total_pages = response.data.total_pages
+        })
+        .catch(e => {
+          this.errors.push(e)
+        })
     }
   }
 }

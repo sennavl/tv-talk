@@ -7,6 +7,7 @@ import MovieDetails from '@/components/MovieDetails'
 import SeriesDetails from '@/components/SeriesDetails'
 import Chatroom from '@/components/Chatroom'
 import Overview from '@/components/Overview'
+import Search from '@/components/Search'
 import AuthService from './../auth/AuthService'
 
 Vue.use(Router)
@@ -66,6 +67,12 @@ const router = new Router({
       path: '/overview',
       name: 'overview',
       component: Overview,
+      props: true
+    },
+    {
+      path: '/search',
+      name: 'search',
+      component: Search,
       props: true
     },
     {

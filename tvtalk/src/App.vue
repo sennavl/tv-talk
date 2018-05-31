@@ -160,24 +160,14 @@ export default {
       }
     },
     search () {
-      const searchMoviesUrl = `https://api.themoviedb.org/3/search/multi?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US&query=${this.searchTerm}&page=1`
-      axios
-        .get(
-          searchMoviesUrl
-        )
-        .then(response => {
-          this.$router.push({ name: 'overview',
-            params: {
-              results: response.data.results,
-              pages: response.data.total_pages,
-              numberResults: response.data.total_results,
-              getUrl: searchMoviesUrl
-            }
-          })
-        })
-        .catch(e => {
-          this.errors.push(e)
-        })
+      const tempSearch = this.searchTerm
+      this.searchTerm = ''
+      this.$router.push({ name: 'search',
+        query: {
+          q: tempSearch,
+          page: 1
+        }
+      })
     },
     searchMoviesAndSeries (searchTerm) {
       if (searchTerm !== null && searchTerm.length > 0) {
