@@ -2,7 +2,7 @@
   <div id="main" v-if="movie">
     <div class="inner">
       <a @click.stop.prevent="test">&lt; back</a>
-      <h1>{{ movie.title }} ({{ movie.release_date.substring(0,4) }})</h1>
+      <h1>{{ movie.title }} ({{ getYear(movie.release_date) }})</h1>
       <div class="subtitles">
         <p><span class="icon-subtitle"><i class="material-icons">access_time</i></span>{{ getTimeFromMins(movie.runtime)  }}</p>
         <p><span class="icon-subtitle"><i class="material-icons">movie</i></span>{{ getGenres() }}</p>
@@ -53,6 +53,10 @@ export default {
   methods: {
     test () {
       this.$router.go(-1)
+    },
+    getYear (date) {
+      console.log(date)
+      return date.substring(0, 4)
     },
     getTimeFromMins (mins) {
       const h = mins / 60 | 0

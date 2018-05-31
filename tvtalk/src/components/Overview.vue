@@ -37,9 +37,9 @@
         <div class="pagination">
           <ul>
             <li><router-link :to="{ name: 'overview', query: { page: 1 }}" :class="currentPage === 1 ? 'not-active' : ''">1</router-link></li>
-            <li><router-link :to="{ name: 'overview', query: { page: 2 }}" :class="currentPage === 2 ? 'not-active' : ''">2</router-link></li>
-            <li><a href="">3</a></li>
-            <li><a href="">4</a></li>
+            <li>...</li>
+            <li v-for="page of other_pages" :key="page.id"><router-link :to="{ name: 'overview', query: { page } }" :class="currentPage === page ? 'not-active' : ''">{{ page }}</router-link></li>
+            <li>...</li>
             <li><router-link :to="{ name: 'overview', query: { page: getTotalPages }}" :class="currentPage === getTotalPages ? 'not-active' : ''">{{ getTotalPages }}</router-link></li>
           </ul>
         </div>
@@ -66,7 +66,8 @@ export default {
       total_results: 0,
       genres: [],
       currentPage: 1,
-      total_pages: 0
+      total_pages: 0,
+      other_pages: [2, 3, 4]
     }
   },
   computed: {
@@ -83,6 +84,9 @@ export default {
       deep: true,
       handler: function (refreshPage) {
         this.currentPage = refreshPage.query.page
+        if (this.currentPage - 1 > 2) {
+          this.other_pages = [this.currentPage - 1, this.currentPage, parseInt(this.currentPage) + 1]
+        }
         this.getMovies()
       }
     }
@@ -91,10 +95,23 @@ export default {
     if (this.$route.query.page) {
       this.currentPage = this.$route.query.page
     }
+    if (this.currentPage - 1 > 2) {
+      this.other_pages = [this.currentPage - 1, this.currentPage, parseInt(this.currentPage) + 1]
+    }
     this.getGenresFromDatabase()
     this.getMovies()
   },
   methods: {
+    checkCurrentPage (num) {
+      let tempNumber = 0
+      if ((this.currentPage - 1) < 3) {
+        tempNumber = num
+      } else {
+        tempNumber = this.currentPage - 1
+      }
+      const test = this.currentPage === tempNumber
+      return test
+    },
     getGenresFromDatabase () {
       axios
         .get(
@@ -161,8 +178,6 @@ export default {
       list-style: none;
       display: flex;
     }
-    li {
-    }
   }
 }
 
@@ -187,6 +202,7 @@ export default {
   .movie-content {
     margin: 0 0 0 12px;
     width: 100%;
+    position: relative;
 
     .title-rating {
       display: flex;
@@ -205,7 +221,9 @@ export default {
 
     a {
       font-size: 0.7em;
-      float: right;
+      position: absolute;
+      right: 0;
+      bottom: 0;
     }
   }
 }
@@ -215,5 +233,7 @@ export default {
   cursor: default;
   text-decoration: none;
   color: black;
+  padding: 0px 10px 0px 10px;
+  background-color: rgb(201, 201, 201);
 }
 </style>
