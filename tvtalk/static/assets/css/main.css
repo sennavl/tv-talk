@@ -2273,13 +2273,13 @@
 				border: solid 1px #c9c9c9;
 				content: '';
 				display: inline-block;
-				height: 1.8em;
+				height: 1.5em;
 				left: 0;
 				line-height: 1.725em;
 				position: absolute;
 				text-align: center;
 				top: 0;
-				width: 1.8em;
+				width: 1.5em;
 			}
 
 		input[type="checkbox"]:checked + label:before,

@@ -5,9 +5,16 @@
     <div class="content">
       <div class="filter">
         <h2>Filter</h2>
-        <p>Release date</p>
-        <input type="date" class="date-input" v-model="startDate" placeholder="Name" @blur="getMovies()" />
-        <p>Genres</p>
+        <p class="title">Release date</p>
+        <p class="subtitle">From</p>
+        <input type="date" class="date-input" v-model="startDate" placeholder="Name" @blur="startDateChanged()" />
+        <p class="subtitle">To</p>
+        <input type="date" class="date-input" v-model="endDate" placeholder="Name" @blur="endDateChanged()" />
+        <p class="title">Genres</p>
+        <div v-for="genreLoop of genres" :key="genreLoop.id">
+          <input type="checkbox" v-model="genre" :id="'genre_' + genreLoop.id" :value="genreLoop.id"  />
+          <label :for="'genre_' + genreLoop.id">{{ genreLoop.name }}</label>
+        </div>
         <div class="select-wrapper">
           <select name="demo-category" id="demo-category">
             <option value="">- Category -</option>
@@ -68,6 +75,8 @@ export default {
       baseUrlPoster: 'https://image.tmdb.org/t/p/w342',
       total_results: 0,
       genres: [],
+      genre: [],
+      genreString: '',
       currentPage: 1,
       total_pages: 0,
       other_pages: [2, 3, 4],
@@ -90,6 +99,10 @@ export default {
         }
         this.getMovies()
       }
+    },
+    genre: function () {
+      console.log('verandering')
+      this.getMovies()
     }
   },
   created () {
@@ -98,6 +111,12 @@ export default {
     }
     if (this.currentPage - 1 > 2 && this.currentPage - 1 < this.total_pages) {
       this.other_pages = [this.currentPage - 1, this.currentPage, parseInt(this.currentPage) + 1]
+    }
+    if (this.$route.query.startDate) {
+      this.startDate = this.$route.query.startDate
+    }
+    if (this.$route.query.endDate) {
+      this.endDate = this.$route.query.endDate
     }
     this.getGenresFromDatabase()
     this.getMovies()
@@ -122,10 +141,37 @@ export default {
           this.genres = response.data.genres
         })
     },
+    startDateChanged () {
+      if (this.startDate.length > 0) {
+        this.$router.replace({ name: 'overview', query: { startDate: this.startDate } })
+        this.getMovies()
+      } else {
+        this.$router.replace({ name: 'overview' })
+        this.getMovies()
+      }
+    },
+    endDateChanged () {
+      if (this.endDate.length > 0) {
+        this.$router.replace({ name: 'overview', query: { endDate: this.endDate } })
+        this.getMovies()
+      } else {
+        this.$router.replace({ name: 'overview' })
+        this.getMovies()
+      }
+    },
     getMovies () {
+      if (this.genre.length === 1) {
+        this.genreString = this.genre[0]
+      } else if (this.genre.length > 1) {
+        this.genreString = ''
+        this.genre.forEach(genreId => {
+          this.genreString += genreId + ','
+        })
+        this.genreString = this.genreString.substring(0, this.genreString.length - 1)
+      }
       axios
         .get(
-          `https://api.themoviedb.org/3/discover/movie?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US&sort_by=popularity.desc&page=${this.currentPage}&primary_release_date.gte=${this.startDate}&primary_release_date.lte=${this.endDate}`
+          `https://api.themoviedb.org/3/discover/movie?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US&sort_by=popularity.desc&page=${this.currentPage}&primary_release_date.gte=${this.startDate}&primary_release_date.lte=${this.endDate}&with_genres=${this.genreString}`
         )
         .then(response => {
           this.movies = response.data.results
@@ -154,8 +200,12 @@ export default {
 </script>
 
 <style lang="less" rel="stylesheet/less" type="text/less" scoped>
-.filter p {
+.filter p.title {
   font-weight: bold;
+  margin: 0;
+}
+
+.filter p.subtitle {
   margin: 0;
 }
 
