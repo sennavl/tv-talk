@@ -53,6 +53,20 @@ app.get('/ratings', checkJwt, (req, res) => {
 		.catch(err => res.status(500, err.message).end());
 });
 
+app.post('/rating/add', (req, res) => {
+	console.log(req.body)
+	let newRating = new Rating(req.body);
+	newRating
+		.save()
+		.then((rating) => {
+			res.json(rating);
+		})
+		.catch(err => {
+			console.log(err.message)
+			res.status(500, err.message).end();
+		})
+})
+
 // launch the API Server at localhost:3001
 app.listen(3001);
 console.log('Listening on http://localhost:3001');

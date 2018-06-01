@@ -2,7 +2,13 @@
   <div id="main" v-if="movie">
     <div class="inner">
       <a @click.stop.prevent="test">&lt; back</a>
-      <h1>{{ movie.title }} ({{ getYear(movie.release_date) }})</h1>
+      <div class="title-rating">
+        <h1>{{ movie.title }} ({{ getYear(movie.release_date) }})</h1>
+        <div class="rating">
+          <i class="material-icons">star_rate</i>
+          <p><a @click="showModal = true">Add rating</a></p>
+        </div>
+      </div>
       <div class="subtitles">
         <p><span class="icon-subtitle"><i class="material-icons">access_time</i></span>{{ getTimeFromMins(movie.runtime)  }}</p>
         <p><span class="icon-subtitle"><i class="material-icons">movie</i></span>{{ getGenres() }}</p>
@@ -22,6 +28,21 @@
       </div>
       {{movie}}
     </div>
+
+    <div id="myModal" class="modal" v-if="showModal" @click="showModal = false">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="close">&times;</span>
+          <h2>Add rating</h2>
+        </div>
+        <div class="modal-body">
+          <p>Some text in the Modal Body</p>
+          <p>Some other text...</p>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -35,7 +56,8 @@ export default {
     return {
       movie: {},
       baseUrlPoster: 'https://image.tmdb.org/t/p/w342',
-      testArray: ['testa', 'testb', 'testc']
+      testArray: ['testa', 'testb', 'testc'],
+      showModal: false
     }
   },
   created () {
@@ -55,7 +77,6 @@ export default {
       this.$router.go(-1)
     },
     getYear (date) {
-      console.log(date)
       return date.substring(0, 4)
     },
     getTimeFromMins (mins) {
@@ -119,5 +140,67 @@ h1 {
   p {
     margin-right: 1em;
   }
+}
+
+.title-rating {
+  display: flex;
+  justify-content: space-between;
+
+  .rating {
+    margin: 0;
+    display: flex;
+
+    i {
+      margin: 0;
+      width: 30px;
+      margin-top: 16px;
+      font-size: 32px;
+      color: #FFD700;
+    }
+
+    p {
+      margin: 14px 0 0 10px;
+    }
+  }
+}
+
+.modal {
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-header {
+  padding: 2px 16px;
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }
 </style>

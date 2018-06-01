@@ -48,14 +48,14 @@
         </div>
         <div class="pagination">
           <ul>
-            <li><router-link :to="{ name: 'overview', query: { page: 1 }}" :class="currentPage == 1 ? 'not-active' : ''">1</router-link></li>
+            <li><a @click="changePage(1)" :class="currentPage == 1 ? 'not-active' : ''">1</a></li>
             <li v-if="total_pages > 4">...</li>
-            <li v-if="total_pages > 4" v-for="page of other_pages" :key="page.id"><router-link :to="{ name: 'overview', query: { page } }" :class="currentPage === page ? 'not-active' : ''">{{ page }}</router-link></li>
-            <li v-if="total_pages === 3"><router-link :to="{ name: 'overview', query: { page: 2 } }" :class="currentPage == 2 ? 'not-active' : ''">{{ 2 }}</router-link></li>
-            <li v-if="total_pages === 4"><router-link :to="{ name: 'overview', query: { page: 2 } }" :class="currentPage == 2 ? 'not-active' : ''">{{ 2 }}</router-link></li>
-            <li v-if="total_pages === 4"><router-link :to="{ name: 'overview', query: { page: 3 } }" :class="currentPage == 3 ? 'not-active' : ''">{{ 3 }}</router-link></li>
+            <li v-if="total_pages > 4" v-for="page of other_pages" :key="page.id"><a v-if="page < getTotalPages" @click="changePage(page)" :class="currentPage === page ? 'not-active' : ''">{{ page }}</a></li>
+            <li v-if="total_pages === 3"><a @click="changePage(2)" :class="currentPage == 2 ? 'not-active' : ''">{{ 2 }}</a></li>
+            <li v-if="total_pages === 4"><a @click="changePage(2)" :class="currentPage == 2 ? 'not-active' : ''">{{ 2 }}</a></li>
+            <li v-if="total_pages === 4"><a @click="changePage(3)" :class="currentPage == 3 ? 'not-active' : ''">{{ 3 }}</a></li>
             <li v-if="total_pages > 4">...</li>
-            <li><router-link v-if="getTotalPages > 1" :to="{ name: 'overview', query: { page: getTotalPages }}" :class="currentPage == getTotalPages ? 'not-active' : ''">{{ getTotalPages }}</router-link></li>
+            <li><a v-if="getTotalPages > 1" @click="changePage(getTotalPages)" :class="currentPage == getTotalPages ? 'not-active' : ''">{{ getTotalPages }}</a></li>
           </ul>
         </div>
       </div>
@@ -142,6 +142,11 @@ export default {
     this.getMovies()
   },
   methods: {
+    changePage (page) {
+      this.$router.push({
+        query: Object.assign({}, this.$route.query, { page })
+      })
+    },
     getGenresFromDatabase () {
       axios
         .get(
@@ -272,7 +277,7 @@ export default {
       margin: 0;
 
       .select-wrapper {
-        width: 200px;
+        width: 220px;
       }
 
       p {
