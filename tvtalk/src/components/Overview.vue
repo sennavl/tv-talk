@@ -15,20 +15,25 @@
           <input type="checkbox" v-model="genre" :id="'genre_' + genreLoop.id" :value="genreLoop.id"  />
           <label :for="'genre_' + genreLoop.id">{{ genreLoop.name }}</label>
         </div>
-        <div class="select-wrapper">
-          <select name="demo-category" id="demo-category">
-            <option value="">- Category -</option>
-            <option value="1">Manufacturing</option>
-            <option value="1">Shipping</option>
-            <option value="1">Administration</option>
-            <option value="1">Human Resources</option>
-          </select>
-        </div>
       </div>
       <div class="movies-overview">
-        <h2>{{ total_results }} results</h2>
+        <div class="movie-list-header">
+          <h2>{{ total_results }} results</h2>
+          <div class="sort">
+            <p>Sort by:</p>
+            <div class="select-wrapper">
+              <select name="demo-category" id="demo-category" v-model="selectedSorting">
+                <option value="popularity.desc">Popularity descending</option>
+                <option value="popularity.asc">Popularity ascending</option>
+                <option value="1">Shipping</option>
+                <option value="1">Administration</option>
+                <option value="1">Human Resources</option>
+              </select>
+            </div>
+          </div>
+        </div>
         <div class="movie-overview" v-for="movie of movies" :key="movie.id">
-          <router-link :to="{ name: 'movieDetails', params: { id: movie.id }}"><img :src=baseUrlPoster+movie.poster_path alt=""></router-link>
+          <router-link :to="{ name: 'movieDetails', params: { id: movie.id }}" class="poster"><img :src=baseUrlPoster+movie.poster_path alt=""></router-link>
           <div class="movie-content">
             <div class="title-rating">
               <h3>{{ movie.title }}</h3>
@@ -81,7 +86,8 @@ export default {
       total_pages: 0,
       other_pages: [2, 3, 4],
       startDate: '',
-      endDate: ''
+      endDate: '',
+      selectedSorting: 'popularity.desc'
     }
   },
   computed: {
@@ -101,7 +107,15 @@ export default {
       }
     },
     genre: function () {
-      console.log('verandering')
+      this.$router.push({
+        query: Object.assign({}, this.$route.query, { genres: this.genre })
+      })
+      this.getMovies()
+    },
+    selectedSorting: function () {
+      this.$router.push({
+        query: Object.assign({}, this.$route.query, { sorted: this.selectedSorting })
+      })
       this.getMovies()
     }
   },
@@ -118,20 +132,16 @@ export default {
     if (this.$route.query.endDate) {
       this.endDate = this.$route.query.endDate
     }
+    if (this.$route.query.genres) {
+      this.genre = this.$route.query.genres
+    }
+    if (this.$route.query.sorted) {
+      this.selectedSorting = this.$route.query.sorted
+    }
     this.getGenresFromDatabase()
     this.getMovies()
   },
   methods: {
-    checkCurrentPage (num) {
-      let tempNumber = 0
-      if ((this.currentPage - 1) < 3) {
-        tempNumber = num
-      } else {
-        tempNumber = this.currentPage - 1
-      }
-      const test = this.currentPage === tempNumber
-      return test
-    },
     getGenresFromDatabase () {
       axios
         .get(
@@ -141,21 +151,46 @@ export default {
           this.genres = response.data.genres
         })
     },
+    getQueryRoute (type) {
+      let obj = {}
+      if (this.$route.query.page) {
+        obj.page = this.$route.query.page
+      }
+      if (this.$route.query.genres) {
+        obj.genres = this.$route.query.genres
+      }
+      if (this.$route.query.endDate && type !== 'endDate') {
+        obj.endDate = this.$route.query.endDate
+      }
+      if (this.$route.query.startDate && type !== 'startDate') {
+        obj.startDate = this.$route.query.startDate
+      }
+      if (this.$route.query.sorted) {
+        obj.sorted = this.$route.query.sorted
+      }
+      return obj
+    },
     startDateChanged () {
       if (this.startDate.length > 0) {
-        this.$router.replace({ name: 'overview', query: { startDate: this.startDate } })
+        this.$router.push({
+          query: Object.assign({}, this.$route.query, { startDate: this.startDate })
+        })
         this.getMovies()
       } else {
-        this.$router.replace({ name: 'overview' })
+        const queryRoute = this.getQueryRoute('startDate')
+        this.$router.push({ name: 'overview', query: queryRoute })
         this.getMovies()
       }
     },
     endDateChanged () {
       if (this.endDate.length > 0) {
-        this.$router.replace({ name: 'overview', query: { endDate: this.endDate } })
+        this.$router.push({
+          query: Object.assign({}, this.$route.query, { endDate: this.endDate })
+        })
         this.getMovies()
       } else {
-        this.$router.replace({ name: 'overview' })
+        const queryRoute = this.getQueryRoute('endDate')
+        this.$router.push({ name: 'overview', query: queryRoute })
         this.getMovies()
       }
     },
@@ -168,10 +203,12 @@ export default {
           this.genreString += genreId + ','
         })
         this.genreString = this.genreString.substring(0, this.genreString.length - 1)
+      } else {
+        this.genreString = ''
       }
       axios
         .get(
-          `https://api.themoviedb.org/3/discover/movie?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US&sort_by=popularity.desc&page=${this.currentPage}&primary_release_date.gte=${this.startDate}&primary_release_date.lte=${this.endDate}&with_genres=${this.genreString}`
+          `https://api.themoviedb.org/3/discover/movie?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US&sort_by=${this.selectedSorting}&page=${this.currentPage}&primary_release_date.gte=${this.startDate}&primary_release_date.lte=${this.endDate}&with_genres=${this.genreString}`
         )
         .then(response => {
           this.movies = response.data.results
@@ -222,6 +259,34 @@ export default {
 .movies-overview {
   width: 75%;
   margin: 0;
+
+  .movie-list-header {
+    display: flex;
+    justify-content: space-between;
+    height: 70px;
+
+    h2 {
+      margin-top: 15px;
+    }
+
+    .sort {
+      margin: 0;
+
+      .select-wrapper {
+        width: 200px;
+      }
+
+      p {
+        margin: 10px 10px 0 0;
+        float: left;
+        font-weight: bold;
+      }
+
+      div {
+        float: left;
+      }
+    }
+  }
 
   .pagination {
 
@@ -292,5 +357,63 @@ export default {
   width: 100%;
   border: 0;
   border-bottom: 1px solid rgb(201, 201, 201);
+}
+
+@media screen and (max-width: 736px) {
+  .content {
+    display: block;
+    width: 100%;
+
+    .filter {
+      width: 100%;
+    }
+
+    .movies-overview {
+      width: 100%;
+    }
+
+    .movie-list-header {
+      display: block;
+      height: 100%;
+
+      .sort {
+        display: flex;
+        margin-bottom: 20px;
+
+        p {
+          float: none;
+          margin-right: 20px;
+        }
+
+        div {
+          float: none;
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 595px) {
+  .movie-overview {
+    display: block;
+
+    .poster {
+      display: none;
+    }
+
+    .title-rating p {
+      margin-right: 10px;
+    }
+
+    .movie-content {
+      height: 100%;
+      position: initial;
+
+      a {
+        position: initial;
+      }
+    }
+  }
 }
 </style>
