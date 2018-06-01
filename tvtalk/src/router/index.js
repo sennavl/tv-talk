@@ -7,6 +7,7 @@ import MovieDetails from '@/components/MovieDetails'
 import SeriesDetails from '@/components/SeriesDetails'
 import Chatroom from '@/components/Chatroom'
 import Overview from '@/components/Overview'
+import OverviewTv from '@/components/OverviewTv'
 import Search from '@/components/Search'
 import AuthService from './../auth/AuthService'
 
@@ -67,6 +68,12 @@ const router = new Router({
       path: '/overview',
       name: 'overview',
       component: Overview,
+      props: true
+    },
+    {
+      path: '/overviewTv',
+      name: 'overviewTv',
+      component: OverviewTv,
       props: true
     },
     {

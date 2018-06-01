@@ -1,7 +1,7 @@
 <template>
 <div id="main">
   <div class="inner" v-if="movies">
-    <h1>Overview - movies</h1>
+    <h1>Overview - tv series</h1>
     <div class="content">
       <div class="filter">
         <h2>Filter</h2>
@@ -36,26 +36,26 @@
           <router-link :to="{ name: 'movieDetails', params: { id: movie.id }}" class="poster"><img :src=baseUrlPoster+movie.poster_path alt=""></router-link>
           <div class="movie-content">
             <div class="title-rating">
-              <h3>{{ movie.title }}</h3>
+              <h3>{{ movie.name }}</h3>
               <p>7.9 <span class="icon-subtitle"><i class="material-icons">start_rate</i></span></p>
             </div>
             <p v-if="movie.overview.length > 177">{{ movie.overview.substring(0, 177) + '...' }}</p>
             <p v-else>{{ movie.overview }}</p>
-            <p><span class="subtitle-overview">Release date: </span>{{ movie.release_date }}</p>
+            <p><span class="subtitle-overview">First aired: </span>{{ movie.first_air_date }}</p>
             <p><span class="subtitle-overview">Genres: </span>{{ getGenres(movie) }}</p>
             <router-link class="button" :to="{ name: 'movieDetails', params: { id: movie.id }}">See more</router-link>
           </div>
         </div>
         <div class="pagination">
           <ul>
-            <li><router-link :to="{ name: 'overview', query: { page: 1 }}" :class="currentPage == 1 ? 'not-active' : ''">1</router-link></li>
+            <li><router-link :to="{ name: 'overviewTv', query: { page: 1 }}" :class="currentPage == 1 ? 'not-active' : ''">1</router-link></li>
             <li v-if="total_pages > 4">...</li>
-            <li v-if="total_pages > 4" v-for="page of other_pages" :key="page.id"><router-link :to="{ name: 'overview', query: { page } }" :class="currentPage === page ? 'not-active' : ''">{{ page }}</router-link></li>
-            <li v-if="total_pages === 3"><router-link :to="{ name: 'overview', query: { page: 2 } }" :class="currentPage == 2 ? 'not-active' : ''">{{ 2 }}</router-link></li>
-            <li v-if="total_pages === 4"><router-link :to="{ name: 'overview', query: { page: 2 } }" :class="currentPage == 2 ? 'not-active' : ''">{{ 2 }}</router-link></li>
-            <li v-if="total_pages === 4"><router-link :to="{ name: 'overview', query: { page: 3 } }" :class="currentPage == 3 ? 'not-active' : ''">{{ 3 }}</router-link></li>
+            <li v-if="total_pages > 4" v-for="page of other_pages" :key="page.id"><router-link :to="{ name: 'overviewTv', query: { page } }" :class="currentPage === page ? 'not-active' : ''">{{ page }}</router-link></li>
+            <li v-if="total_pages === 3"><router-link :to="{ name: 'overviewTv', query: { page: 2 } }" :class="currentPage == 2 ? 'not-active' : ''">{{ 2 }}</router-link></li>
+            <li v-if="total_pages === 4"><router-link :to="{ name: 'overviewTv', query: { page: 2 } }" :class="currentPage == 2 ? 'not-active' : ''">{{ 2 }}</router-link></li>
+            <li v-if="total_pages === 4"><router-link :to="{ name: 'overviewTv', query: { page: 3 } }" :class="currentPage == 3 ? 'not-active' : ''">{{ 3 }}</router-link></li>
             <li v-if="total_pages > 4">...</li>
-            <li><router-link v-if="getTotalPages > 1" :to="{ name: 'overview', query: { page: getTotalPages }}" :class="currentPage == getTotalPages ? 'not-active' : ''">{{ getTotalPages }}</router-link></li>
+            <li><router-link v-if="getTotalPages > 1" :to="{ name: 'overviewTv', query: { page: getTotalPages }}" :class="currentPage == getTotalPages ? 'not-active' : ''">{{ getTotalPages }}</router-link></li>
           </ul>
         </div>
       </div>
@@ -145,7 +145,7 @@ export default {
     getGenresFromDatabase () {
       axios
         .get(
-          'https://api.themoviedb.org/3/genre/movie/list?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US'
+          'https://api.themoviedb.org/3/genre/tv/list?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US'
         )
         .then(response => {
           this.genres = response.data.genres
@@ -178,7 +178,7 @@ export default {
         this.getMovies()
       } else {
         const queryRoute = this.getQueryRoute('startDate')
-        this.$router.push({ name: 'overview', query: queryRoute })
+        this.$router.push({ name: 'overviewTv', query: queryRoute })
         this.getMovies()
       }
     },
@@ -190,7 +190,7 @@ export default {
         this.getMovies()
       } else {
         const queryRoute = this.getQueryRoute('endDate')
-        this.$router.push({ name: 'overview', query: queryRoute })
+        this.$router.push({ name: 'overviewTv', query: queryRoute })
         this.getMovies()
       }
     },
@@ -208,7 +208,7 @@ export default {
       }
       axios
         .get(
-          `https://api.themoviedb.org/3/discover/movie?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US&sort_by=${this.selectedSorting}&page=${this.currentPage}&primary_release_date.gte=${this.startDate}&primary_release_date.lte=${this.endDate}&with_genres=${this.genreString}`
+          `https://api.themoviedb.org/3/discover/tv?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US&sort_by=${this.selectedSorting}&page=${this.currentPage}&first_air_date.gte=${this.startDate}&first_air_date.lte=${this.endDate}&with_genres=${this.genreString}`
         )
         .then(response => {
           this.movies = response.data.results
