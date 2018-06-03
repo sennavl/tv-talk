@@ -53,8 +53,9 @@ app.get('/ratings', checkJwt, (req, res) => {
 		.catch(err => res.status(500, err.message).end());
 });
 
-app.post('/rating/add', (req, res) => {
-	console.log(req.body)
+app.post('/rating/add', checkJwt, (req, res) => {
+	let ratingObj = req.body;
+	ratingObj.date = new Date();
 	let newRating = new Rating(req.body);
 	newRating
 		.save()
@@ -64,6 +65,37 @@ app.post('/rating/add', (req, res) => {
 		.catch(err => {
 			console.log(err.message)
 			res.status(500, err.message).end();
+		})
+})
+
+app.get('/rating', (req, res) => {
+	Rating
+		.findOne({ user_id: req.query.user_id, movie_id: req.query.movie_id })
+		.then((rating) => {
+			if (rating) {
+				res.json(rating);
+			} else {
+				res.json(null);
+			}
+		})
+})
+
+app.get('/averageRating', (req, res) => {
+	Rating
+		.aggregate([
+			{
+				$match: {
+					movie_id: parseInt(req.query.movie_id)
+				}
+			},
+			{
+				$group: {
+					_id: '$movie_id',
+					averageRating: { $avg: '$rating'}
+				}
+			}
+		]).then((response) => {
+			console.log(response);
 		})
 })
 

@@ -118,8 +118,9 @@ export default {
     authNotifier.on('authChange', authState => {
       this.authenticated = authState.authenticated
       this.admin = authState.admin
-      if (this.authenticated === true) {
+      if (this.authenticated === true && localStorage.getItem('redirectUrl') !== null) {
         this.$router.push({ path: localStorage.getItem('redirectUrl') })
+        localStorage.removeItem('redirectUrl')
       }
     })
 
