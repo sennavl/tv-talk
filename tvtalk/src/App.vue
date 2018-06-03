@@ -118,6 +118,9 @@ export default {
     authNotifier.on('authChange', authState => {
       this.authenticated = authState.authenticated
       this.admin = authState.admin
+      if (this.authenticated === true) {
+        this.$router.push({ path: localStorage.getItem('redirectUrl') })
+      }
     })
 
     return {
@@ -153,10 +156,8 @@ export default {
       this.searchTerm = ''
       this.searchResults = []
       if (mediaType === 'movie') {
-        console.log('movie')
         this.$router.push({ name: 'movieDetails', params: { id } })
       } else if (mediaType === 'tv') {
-        console.log('tv')
         this.$router.push({ name: 'seriesDetails', params: { id } })
       }
     },

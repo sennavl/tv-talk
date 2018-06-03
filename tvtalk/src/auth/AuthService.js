@@ -29,6 +29,7 @@ export default class AuthService {
   lock = new Auth0Lock(AUTH_CONFIG.clientId, AUTH_CONFIG.domain, {
     autoclose: true,
     auth: {
+      redirectUrl: 'http://localhost:3000/',
       audience: AUTH_CONFIG.apiUrl,
       responseType: 'token id_token',
       params: {

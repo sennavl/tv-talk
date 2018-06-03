@@ -24,6 +24,7 @@
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
     "vue-socket.io": "^2.1.1-b",
+    "vue-star-rating": "^1.6.0",
     "vuejs-paginate": "^1.9.1"
   },
   "devDependencies": {
