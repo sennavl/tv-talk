@@ -59,7 +59,7 @@ const router = new Router({
       props: true
     },
     {
-      path: '/movies/:id/details',
+      path: '/series/:id/details',
       name: 'seriesDetails',
       component: SeriesDetails,
       props: true

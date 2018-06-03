@@ -25,9 +25,6 @@
               <select name="demo-category" id="demo-category" v-model="selectedSorting">
                 <option value="popularity.desc">Popularity descending</option>
                 <option value="popularity.asc">Popularity ascending</option>
-                <option value="1">Shipping</option>
-                <option value="1">Administration</option>
-                <option value="1">Human Resources</option>
               </select>
             </div>
           </div>

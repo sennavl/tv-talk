@@ -25,15 +25,12 @@
               <select name="demo-category" id="demo-category" v-model="selectedSorting">
                 <option value="popularity.desc">Popularity descending</option>
                 <option value="popularity.asc">Popularity ascending</option>
-                <option value="1">Shipping</option>
-                <option value="1">Administration</option>
-                <option value="1">Human Resources</option>
               </select>
             </div>
           </div>
         </div>
         <div class="movie-overview" v-for="movie of movies" :key="movie.id">
-          <router-link :to="{ name: 'movieDetails', params: { id: movie.id }}" class="poster"><img :src=baseUrlPoster+movie.poster_path alt=""></router-link>
+          <router-link :to="{ name: 'seriesDetails', params: { id: movie.id }}" class="poster"><img :src=baseUrlPoster+movie.poster_path alt=""></router-link>
           <div class="movie-content">
             <div class="title-rating">
               <h3>{{ movie.name }}</h3>
@@ -43,7 +40,7 @@
             <p v-else>{{ movie.overview }}</p>
             <p><span class="subtitle-overview">First aired: </span>{{ movie.first_air_date }}</p>
             <p><span class="subtitle-overview">Genres: </span>{{ getGenres(movie) }}</p>
-            <router-link class="button" :to="{ name: 'movieDetails', params: { id: movie.id }}">See more</router-link>
+            <router-link class="button" :to="{ name: 'seriesDetails', params: { id: movie.id }}">See more</router-link>
           </div>
         </div>
         <div class="pagination">
