@@ -1,6 +1,6 @@
 <template>
 <div id="main">
-  <div class="inner" v-if="movies">
+  <div class="inner" v-if="movies && ratings">
     <h1>Overview - movies</h1>
     <div class="content">
       <div class="filter">
@@ -29,12 +29,12 @@
             </div>
           </div>
         </div>
-        <div class="movie-overview" v-for="movie of movies" :key="movie.id">
+        <div class="movie-overview" v-for="(movie, index) of movies" :key="movie.id">
           <router-link :to="{ name: 'movieDetails', params: { id: movie.id }}" class="poster"><img :src=baseUrlPoster+movie.poster_path alt=""></router-link>
           <div class="movie-content">
             <div class="title-rating">
               <h3>{{ movie.title }}</h3>
-              <p>7.9 <span class="icon-subtitle"><i class="material-icons">start_rate</i></span></p>
+              <p>{{ ratings[index] }} <span class="icon-subtitle"><i class="material-icons">start_rate</i></span></p>
             </div>
             <p v-if="movie.overview.length > 177">{{ movie.overview.substring(0, 177) + '...' }}</p>
             <p v-else>{{ movie.overview }}</p>
@@ -84,7 +84,8 @@ export default {
       other_pages: [2, 3, 4],
       startDate: '',
       endDate: '',
-      selectedSorting: 'popularity.desc'
+      selectedSorting: 'popularity.desc',
+      ratings: []
     }
   },
   computed: {
@@ -217,6 +218,9 @@ export default {
           this.total_results = response.data.total_results
           this.total_pages = response.data.total_pages
         })
+        .then(() => {
+          this.getRatings()
+        })
         .catch(e => {
           this.errors.push(e)
         })
@@ -232,6 +236,14 @@ export default {
         }
       }
       return genresString
+    },
+    getRatings () {
+      this.movies.forEach(movie => {
+        axios.get(`http://localhost:3001/averageRating?movie_id=${movie.id}`)
+          .then((response) => {
+            this.ratings.push(response.data)
+          })
+      })
     }
   }
 }

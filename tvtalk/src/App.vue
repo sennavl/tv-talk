@@ -13,7 +13,7 @@
             <li><router-link to="/home">Home</router-link></li>
             <li><router-link :to="{ name: 'overview', query: { page: 1, sorted: 'popularity.desc' }}">Movies</router-link></li>
             <li><router-link :to="{ name: 'overviewTv', query: { page: 1, sorted: 'popularity.desc' }}">Tv series</router-link></li>
-            <li><router-link to="/chatroom">Live events</router-link></li>
+            <li><router-link to="/events">Live events</router-link></li>
             <li>|</li>
             <li><a v-if="!authenticated" @click.stop.prevent="login()">Log in</a></li>
             <li v-if="authenticated"><router-link to="/profile">Profile</router-link></li>
@@ -49,7 +49,7 @@
         <li><router-link to="/home">Home</router-link></li>
         <li><router-link :to="{ name: 'overview', query: { page: 1, sorted: 'popularity.desc' }}">Movies</router-link></li>
         <li><router-link :to="{ name: 'overviewTv', query: { page: 1, sorted: 'popularity.desc' }}">Tv series</router-link></li>
-        <li><router-link to="/chatroom">Live events</router-link></li>
+        <li><router-link to="/events">Live events</router-link></li>
         <li>|</li>
         <li><a v-if="!authenticated" @click.stop.prevent="login()">Log in</a></li>
         <li v-if="authenticated"><router-link to="/profile">Profile</router-link></li>

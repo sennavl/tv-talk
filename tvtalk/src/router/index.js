@@ -9,6 +9,8 @@ import Chatroom from '@/components/Chatroom'
 import Overview from '@/components/Overview'
 import OverviewTv from '@/components/OverviewTv'
 import Search from '@/components/Search'
+import Events from '@/components/Events'
+import SubEvents from '@/components/SubEvents'
 import AuthService from './../auth/AuthService'
 
 Vue.use(Router)
@@ -80,6 +82,18 @@ const router = new Router({
       path: '/search',
       name: 'search',
       component: Search,
+      props: true
+    },
+    {
+      path: '/events',
+      name: 'events',
+      component: Events,
+      props: true
+    },
+    {
+      path: '/subEvents/:id',
+      name: 'subEvents',
+      component: SubEvents,
       props: true
     },
     {

@@ -1,5 +1,7 @@
 const express = require('express');
 const Rating = require('./models/rating');
+const Event = require('./models/event');
+const SubEvent = require('./models/subEvent');
 const app = express();
 const jwt = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
@@ -53,6 +55,33 @@ app.get('/ratings', checkJwt, (req, res) => {
 		.catch(err => res.status(500, err.message).end());
 });
 
+app.get('/events', (req, res) => {
+	Event
+		.find()
+		.then((events) => {
+			res.json(events);
+		})
+		.catch(err => res.status(500, err.message).end());
+})
+
+app.get('/event/:id', (req, res) => {
+	Event
+		.findById(req.params.id)
+		.then((event) => {
+			res.json(event);
+		})
+		.catch(e => res.status(500, err.message).end());
+})
+
+app.get('/subEvents/:id', (req, res) => {
+	SubEvent
+		.find({ event_id: req.params.id})
+		.then((subEvent) => {
+			res.json(subEvent);
+		})
+		.catch(err => res.status(500, err.message).end());
+})
+
 app.post('/rating/add', checkJwt, (req, res) => {
 	let ratingObj = req.body;
 	ratingObj.date = new Date();
@@ -95,7 +124,11 @@ app.get('/averageRating', (req, res) => {
 				}
 			}
 		]).then((response) => {
-			console.log(response);
+			if (response.length > 0) {
+				res.json(response[0].averageRating);
+			} else {
+				res.json('Not yet rated');
+			}
 		})
 })
 

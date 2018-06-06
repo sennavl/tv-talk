@@ -4,9 +4,10 @@
       <div class="inner">
         <h2>Chat</h2>
         <div id="chat-window">
-          <div id="output" v-if="messages.length > 0">
+          <div id="output">
+            <p v-if="messages.length < 1">There are not messages yet</p>
             <p v-for="message in messages" :key="message.id">
-              {{`${message.username}: ${message.message}`}}
+              {{`${message.name}: ${message.message}`}}
             </p>
           </div>
         </div>
@@ -32,8 +33,17 @@ export default {
     }
   },
   created () {
-    socket.on('chat', data => {
-      this.messages.push(data)
+    socket.on('output', (data) => {
+      if (typeof data !== 'undefined') {
+        console.log(data)
+        this.messages.push(data)
+      }
+    })
+    socket.on('initialOutput', (data) => {
+      console.log('initialOutput')
+      if (data.length) {
+        this.messages = data
+      }
     })
     this.getProfile()
   },
@@ -42,9 +52,9 @@ export default {
       if (Object.keys(this.profile).length === 0 && this.profile.constructor === Object) {
         this.getProfile()
       }
-      socket.emit('chat', {
+      socket.emit('input', {
         message: this.message,
-        username: this.profile.nickname
+        name: this.profile.nickname
       })
 
       this.message = ''
@@ -64,10 +74,17 @@ export default {
         profile: {}
       }
     }
+  },
+  updated () {
+    const output = this.$el.querySelector('#output')
+    output.scrollTop = output.scrollHeight
   }
 }
 </script>
 
 <style>
-
+#output {
+  max-height: 300px;
+  overflow-y: auto;
+}
 </style>
