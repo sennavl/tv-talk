@@ -1,19 +1,21 @@
 <template>
-  <div id="wrapper">
-    <div id="main">
-      <div class="inner">
-        <h2>Chat</h2>
-        <div id="chat-window">
-          <div id="output">
-            <p v-if="messages.length < 1">There are not messages yet</p>
-            <p v-for="message in messages" :key="message.id">
-              {{`${message.name}: ${message.message}`}}
-            </p>
+  <div>
+    <div id="wrapper">
+      <div id="main">
+        <div class="inner">
+          <h2>Chat</h2>
+          <div id="chat-window">
+            <div id="output">
+              <p v-if="messages.length < 1">There are no messages yet</p>
+              <p v-for="message in messages" :key="message.id">
+                {{`${message.name}: ${message.message}`}}
+              </p>
+            </div>
           </div>
+          <input id="message" type="text" placeholder="Message" v-model="message" @keyup.enter="sendMessage" />
+          <button id="send" @click.prevent="sendMessage">Send</button>
+          <button>Test</button>
         </div>
-        <input id="message" type="text" placeholder="Message" v-model="message" @keyup.enter="sendMessage" />
-        <button id="send" @click.prevent="sendMessage">Send</button>
-        <button @click.prevent="test">Test</button>
       </div>
     </div>
   </div>
@@ -33,6 +35,7 @@ export default {
     }
   },
   created () {
+    console.log('start')
     socket.on('output', (data) => {
       if (typeof data !== 'undefined') {
         console.log(data)

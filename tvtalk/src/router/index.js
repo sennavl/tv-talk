@@ -6,6 +6,7 @@ import Profile from '@/components/Profile'
 import MovieDetails from '@/components/MovieDetails'
 import SeriesDetails from '@/components/SeriesDetails'
 import Chatroom from '@/components/Chatroom'
+import ChatroomOverview from '@/components/ChatroomOverview'
 import Overview from '@/components/Overview'
 import OverviewTv from '@/components/OverviewTv'
 import Search from '@/components/Search'
@@ -31,7 +32,7 @@ const router = new Router({
       component: Test
     },
     {
-      path: '/chatroom',
+      path: '/chatroom/:id',
       name: 'Chatroom',
       component: Chatroom,
       beforeEnter: (to, from, next) => {
@@ -40,7 +41,8 @@ const router = new Router({
         } else {
           next()
         }
-      }
+      },
+      props: true
     },
     {
       path: '/profile',
@@ -53,6 +55,19 @@ const router = new Router({
           next()
         }
       }
+    },
+    {
+      path: '/chatroomOverview/:id',
+      name: 'ChatroomOverview',
+      component: ChatroomOverview,
+      beforeEnter: (to, from, next) => {
+        if (!auth.isAuthenticated()) {
+          next('/')
+        } else {
+          next()
+        }
+      },
+      props: true
     },
     {
       path: '/movies/:id/details',

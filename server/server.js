@@ -10,6 +10,7 @@ mongo.connect('mongodb://localhost', (err, dbClient) => {
 	console.log('MongoDB connected');
 
 	client.on('connection', (socket) => {
+		console.log(socket.id)
 		let chat = db.collection('chats');
 
 		sendStatus = function(s) {
@@ -31,7 +32,6 @@ mongo.connect('mongodb://localhost', (err, dbClient) => {
 				sendStatus('Please enter a message and login');
 			} else {
 				chat.insert({name: name, message: message}, function() {
-					console.log('EMIT');
 					client.emit('output', data);
 					sendStatus({
 						message: 'message sent',

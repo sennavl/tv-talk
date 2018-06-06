@@ -12,7 +12,7 @@
               <span class="image">
                 <img src="/static/assets/images/WorldCup.png" alt="" />
               </span>
-              <router-link :to="{ name: 'Chatroom'}" v-for="subEvent of subEvents" :key="subEvent.id">
+              <router-link v-for="subEvent of subEvents" :key="subEvent.id" :to="{ name: 'ChatroomOverview', params: { id: subEvent._id }}">
                 <h2>{{ subEvent.title }}</h2>
                 <div class="content">
                   <p>{{ convertDate(subEvent.start) + ' - ' + convertDate(subEvent.end) }}</p>

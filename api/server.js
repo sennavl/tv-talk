@@ -2,6 +2,7 @@ const express = require('express');
 const Rating = require('./models/rating');
 const Event = require('./models/event');
 const SubEvent = require('./models/subEvent');
+const Chatroom = require('./models/chatroom');
 const app = express();
 const jwt = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
@@ -75,9 +76,18 @@ app.get('/event/:id', (req, res) => {
 
 app.get('/subEvents/:id', (req, res) => {
 	SubEvent
-		.find({ event_id: req.params.id})
+		.find({ event_id: req.params.id })
 		.then((subEvent) => {
 			res.json(subEvent);
+		})
+		.catch(err => res.status(500, err.message).end());
+})
+
+app.get('/chatrooms/:id', (req, res) => {
+	Chatroom
+		.find({ subEvent_id: req.params.id })
+		.then((chatrooms) => {
+			res.json(chatrooms);
 		})
 		.catch(err => res.status(500, err.message).end());
 })
