@@ -8,7 +8,7 @@
             <div id="output">
               <p v-if="messages.length < 1">There are no messages yet</p>
               <p v-for="message in messages" :key="message.id">
-                {{`${message.name}: ${message.message}`}}
+                {{`${formatTime(message.date)} ${message.name}: ${message.message}`}}
               </p>
             </div>
           </div>
@@ -22,10 +22,11 @@
 </template>
 
 <script type="text/ecmascript-6">
+import moment from 'moment'
 var socket
 
 export default {
-  props: ['auth'],
+  props: ['auth', 'id'],
   data () {
     return {
       messages: [],
@@ -35,7 +36,7 @@ export default {
   },
   created () {
     const io = require('socket.io-client')
-    socket = io.connect('http://localhost:4113')
+    socket = io.connect('http://localhost:4113', { query: `chatroom_id=${this.id}` })
     console.log(socket)
     console.log('start')
     socket.on('output', (data) => {
@@ -53,13 +54,20 @@ export default {
     this.getProfile()
   },
   methods: {
+    formatTime (date) {
+      const dateConverted = new Date(date)
+      console.log(dateConverted)
+      console.log(moment(dateConverted).format('HH:MM'))
+      return moment(dateConverted).format('HH:mm:ss')
+    },
     sendMessage () {
       if (Object.keys(this.profile).length === 0 && this.profile.constructor === Object) {
         this.getProfile()
       }
       socket.emit('input', {
         message: this.message,
-        name: this.profile.nickname
+        name: this.profile.nickname,
+        chatroom_id: this.id
       })
 
       this.message = ''
