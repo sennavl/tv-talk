@@ -37,16 +37,14 @@ export default {
   created () {
     const io = require('socket.io-client')
     socket = io.connect('http://localhost:4113', { query: `chatroom_id=${this.id}` })
-    console.log(socket)
-    console.log('start')
+    socket.emit('subscribe', this.id)
+
     socket.on('output', (data) => {
       if (typeof data !== 'undefined') {
-        console.log(data)
         this.messages.push(data)
       }
     })
     socket.on('initialOutput', (data) => {
-      console.log('initialOutput')
       if (data.length) {
         this.messages = data
       }
@@ -56,8 +54,6 @@ export default {
   methods: {
     formatTime (date) {
       const dateConverted = new Date(date)
-      console.log(dateConverted)
-      console.log(moment(dateConverted).format('HH:MM'))
       return moment(dateConverted).format('HH:mm:ss')
     },
     sendMessage () {
@@ -94,6 +90,7 @@ export default {
   },
   beforeDestroy () {
     console.log('close chat')
+    socket.emit('unsubscribe', this.id)
     socket.disconnect()
   }
 }

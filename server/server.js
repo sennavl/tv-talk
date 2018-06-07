@@ -1,5 +1,9 @@
 const mongo = require('mongodb').MongoClient;
-var client = require('socket.io').listen(4113).sockets;
+var client = require('socket.io').listen(4113);
+
+client.sockets.on('connection', (socket) => {
+	client.sockets.emit('rooms', client.sockets.adapter.rooms)
+})
 
 // Connect to Mongo
 mongo.connect('mongodb://localhost', (err, dbClient) => {
@@ -9,7 +13,20 @@ mongo.connect('mongodb://localhost', (err, dbClient) => {
 	}
 	console.log('MongoDB connected');
 
-	client.on('connection', (socket) => {
+	client.sockets.on('connection', (socket) => {
+
+		socket.on('subscribe', function(room) {
+			console.log('joining room', room);
+			socket.join(room);
+			client.sockets.emit('rooms', client.sockets.adapter.rooms)
+		})
+
+		socket.on('unsubscribe', function(room) {
+			console.log('leaving room', room);
+			socket.leave(room);
+			client.sockets.emit('rooms', client.sockets.adapter.rooms)
+		})
+
 		let chat = db.collection('chats');
 
 		sendStatus = function(s) {
@@ -32,7 +49,7 @@ mongo.connect('mongodb://localhost', (err, dbClient) => {
 				sendStatus('Please enter a message and login');
 			} else {
 				chat.insert({name: name, message: message, date: data.date, chatroom_id: data.chatroom_id}, function() {
-					client.emit('output', data);
+					client.sockets.emit('output', data);
 					sendStatus({
 						message: 'message sent',
 						clear: true
