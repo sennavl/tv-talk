@@ -22,8 +22,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-const io = require('socket.io-client')
-var socket = io.connect('http://localhost:4113')
+var socket
 
 export default {
   props: ['auth'],
@@ -35,6 +34,9 @@ export default {
     }
   },
   created () {
+    const io = require('socket.io-client')
+    socket = io.connect('http://localhost:4113')
+    console.log(socket)
     console.log('start')
     socket.on('output', (data) => {
       if (typeof data !== 'undefined') {
@@ -81,6 +83,10 @@ export default {
   updated () {
     const output = this.$el.querySelector('#output')
     output.scrollTop = output.scrollHeight
+  },
+  beforeDestroy () {
+    console.log('close chat')
+    socket.disconnect()
   }
 }
 </script>

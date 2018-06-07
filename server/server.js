@@ -1,6 +1,10 @@
 const mongo = require('mongodb').MongoClient;
 var client = require('socket.io').listen(4113).sockets;
 
+client.on('connection', (test) => {
+	console.log('conn1', test.id);
+})
+
 // Connect to Mongo
 mongo.connect('mongodb://localhost', (err, dbClient) => {
 	const db = dbClient.db('tvtalk');
@@ -10,7 +14,7 @@ mongo.connect('mongodb://localhost', (err, dbClient) => {
 	console.log('MongoDB connected');
 
 	client.on('connection', (socket) => {
-		console.log(socket.id)
+		console.log('conn2', socket.id)
 		let chat = db.collection('chats');
 
 		sendStatus = function(s) {

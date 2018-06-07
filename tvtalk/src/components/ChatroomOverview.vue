@@ -5,7 +5,7 @@
         <h1>Chatrooms overview</h1>
         <div class="chatrooms">
           <ul>
-            <li v-for="chatroom in chatrooms" :key="chatroom.id"><router-link :to="{ name: 'Test' }">{{ chatroom.name }}</router-link></li>
+            <li v-for="chatroom in chatrooms" :key="chatroom.id"><router-link :to="{ name: 'Chatroom', params: { id: chatroom._id } }">{{ chatroom.name }}</router-link></li>
           </ul>
         </div>
       </div>

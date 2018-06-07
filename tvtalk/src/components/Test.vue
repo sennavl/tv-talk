@@ -9,32 +9,32 @@
 </template>
 
 <script>
-const io = require('socket.io-client')
-var socket = io.connect('http://localhost:4113')
+// const io = require('socket.io-client')
+// var socket = io.connect('http://localhost:4113')
 
-export default {
-  props: ['auth', 'authenticated'],
-  data () {
-    return {
-      messages: []
-    }
-  },
-  created () {
-    console.log('start')
-    socket.on('output', (data) => {
-      if (typeof data !== 'undefined') {
-        console.log(data)
-        this.messages.push(data)
-      }
-    })
-    socket.on('initialOutput', (data) => {
-      console.log('initialOutput')
-      if (data.length) {
-        this.messages = data
-      }
-    })
-  }
-}
+// export default {
+//   props: ['auth', 'authenticated'],
+//   data () {
+//     return {
+//       messages: []
+//     }
+//   },
+//   created () {
+//     console.log('start')
+//     socket.on('output', (data) => {
+//       if (typeof data !== 'undefined') {
+//         console.log(data)
+//         this.messages.push(data)
+//       }
+//     })
+//     socket.on('initialOutput', (data) => {
+//       console.log('initialOutput')
+//       if (data.length) {
+//         this.messages = data
+//       }
+//     })
+//   }
+// }
 </script>
 
 <style>
@@ -42,4 +42,3 @@ export default {
     cursor: pointer;
   }
 </style>
-
