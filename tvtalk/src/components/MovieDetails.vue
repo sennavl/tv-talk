@@ -5,6 +5,9 @@
       <div class="title-rating">
         <h1>{{ movie.title }} ({{ getYear(movie.release_date) }})</h1>
         <div class="user-interaction">
+          <div class="playlist">
+            <i class="material-icons" @click="openListModal()">playlist_add</i>
+          </div>
           <div class="favorite">
             <i class="material-icons favoriteEmpty" v-if="!favorited" @mouseover="changeFavoriteIcon()" @mouseleave="changeFavoriteIcon()" @click="addToFavorites()">{{ favorite ? 'favorite_border': 'favorite'}}</i>
             <i class="material-icons favoriteFilled" v-if="favorited" @mouseover="changeFavoriteIcon()" @mouseleave="changeFavoriteIcon()" @click="removeFromFavorites()">{{ !favorite ? 'favorite_border': 'favorite'}}</i>
@@ -63,6 +66,26 @@
       </div>
     </div>
 
+    <div id="myModal" class="modal" v-if="showListModal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="close" @click="showListModal = false">&times;</span>
+          <h2>Add item to list</h2>
+        </div>
+        <div class="modal-body">
+          <p v-if="lists.length === 0">You don't have any lists yet</p>
+          <p v-if="lists.length > 0">Select one of your lists</p>
+          <ul v-if="lists.length > 0">
+            <li v-for="list in lists" :key="list.id"><a @click="addMovieToList(list._id)">{{ list.name }}</a></li>
+          </ul>
+          <input type="text" name="list-name" id="list-name" value="" placeholder="List name" style="margin-bottom: 10px" v-model="listTitle" />
+          <input type="submit" value="Add list" class="special" @click="createList()" v-if="listTitle.length > 0" />
+          <input type="submit" value="Add list" class="special disabled" v-if="listTitle.length === 0" />
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -92,7 +115,10 @@ export default {
       rated: false,
       profile: {},
       favorite: true,
-      favorited: false
+      favorited: false,
+      showListModal: false,
+      lists: [],
+      listTitle: ''
     }
   },
   watch: {
@@ -196,6 +222,17 @@ export default {
         this.login()
       }
     },
+    openListModal () {
+      if (this.authenticated) {
+        this.getLists()
+        this.showListModal = true
+      } else {
+        if (typeof (Storage) !== 'undefined') {
+          localStorage.setItem('redirectUrl', this.$route.path)
+        }
+        this.login()
+      }
+    },
     openEditRatingModal () {
       console.log('open edit')
     },
@@ -252,6 +289,54 @@ export default {
     },
     changeFavoriteIcon () {
       this.favorite = !this.favorite
+    },
+    getLists () {
+      axios.get(`http://localhost:3001/lists`,
+        {
+          headers: {
+            authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+        .then((response) => {
+          if (response.data.length > 0) {
+            this.lists = response.data
+          }
+        })
+    },
+    createList () {
+      axios.post(`http://localhost:3001/list/add`,
+        {
+          name: this.listTitle
+        },
+        {
+          headers: {
+            authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            this.getLists()
+          }
+        })
+    },
+    addMovieToList (listId) {
+      axios.post(`http://localhost:3001/list/addMovie`, {
+        movie_id: this.movie.id,
+        list_id: listId,
+        runtime: this.movie.runtime || 0,
+        title: this.movie.title,
+        poster_path: this.movie.poster_path
+      },
+      {
+        headers: {
+          authorization: 'Bearer ' + localStorage.getItem('access_token')
+        }
+      })
+        .then((response) => {
+          if (response.status === 200) {
+            this.showListModal = false
+          }
+        })
     }
   },
   filters: {
@@ -316,6 +401,16 @@ h1 {
   .user-interaction {
     margin: 0;
     display: flex;
+  }
+
+  .playlist {
+    margin: 0;
+
+    i {
+      margin-top: 14px;
+      font-size: 36px;
+      cursor: pointer;
+    }
   }
 
   .favorite {

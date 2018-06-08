@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from '@/components/Home'
 import Test from '@/components/Test'
 import Profile from '@/components/Profile'
+import List from '@/components/List'
 import MovieDetails from '@/components/MovieDetails'
 import SeriesDetails from '@/components/SeriesDetails'
 import Chatroom from '@/components/Chatroom'
@@ -35,6 +36,19 @@ const router = new Router({
       path: '/chatroom/:id',
       name: 'Chatroom',
       component: Chatroom,
+      beforeEnter: (to, from, next) => {
+        if (!auth.isAuthenticated()) {
+          next('/')
+        } else {
+          next()
+        }
+      },
+      props: true
+    },
+    {
+      path: '/list/:id',
+      name: 'List',
+      component: List,
       beforeEnter: (to, from, next) => {
         if (!auth.isAuthenticated()) {
           next('/')

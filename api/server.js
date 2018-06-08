@@ -5,6 +5,8 @@ const Event = require('./models/event');
 const SubEvent = require('./models/subEvent');
 const Chatroom = require('./models/chatroom');
 const Favorite = require('./models/favorite');
+const List = require('./models/list');
+const MoviesList = require('./models/moviesList');
 const app = express();
 const jwt = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
@@ -74,6 +76,58 @@ app.post('/favorite/add', checkJwt, (req, res) => {
 			res.status(500, err.message).end();
 		})
 });
+
+// Add list
+app.post('/list/add', checkJwt, (req, res) => {
+	let listObj = req.body;
+	listObj.user_id = req.user.sub.substring(6, req.user.sub.length);
+	let newList = new List(req.body);
+	newList
+		.save()
+		.then((list) => {
+			res.json(list);
+		})
+		.catch(err => {
+			console.log(err.message)
+			res.status(500, err.message).end();
+		})
+});
+
+// Add movie to list
+app.post('/list/addMovie', checkJwt, (req, res) => {
+	let movieObj = req.body;
+	movieObj.user_id = req.user.sub.substring(6, req.user.sub.length);
+	let newMovie = new MoviesList(req.body);
+	newMovie
+		.save()
+		.then((movie) => {
+			res.json(movie);
+		})
+		.catch(err => {
+			console.log(err.message)
+			res.status(500, err.message).end();
+		})
+});
+
+// Get lists
+app.get('/lists', checkJwt, (req, res) => {
+	List
+		.find({ user_id: req.user.sub.substring(6, req.user.sub.length) })
+		.then((lists) => {
+			res.json(lists);
+		})
+		.catch(err => res.status(500, err.message).end());
+});
+
+// get movies from list
+app.get('/list/movies', checkJwt, (req, res) => {
+	MoviesList
+		.find({ list_id: req.query.list_id })
+		.then((movies) => {
+			res.json(movies);
+		})
+		.catch(err => res.status(500, err.message).end());
+})
 
 // get favorite for a certain user and movie (to check if user already favorited the movie)
 app.get('/favorite', checkJwt, (req, res) => {

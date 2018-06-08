@@ -39,6 +39,14 @@
             <p>You haven't added any movie to your favorites yet.</p>
           </section>
         </section>
+        <section>
+          <h2>Lists</h2>
+          <ul v-if="lists.length > 0">
+            <li v-for="list in lists" :key="list.id">
+              <router-link :to="{ name: 'List', params: { id: list._id }}">{{ list.name }}</router-link>
+            </li>
+          </ul>
+        </section>
       </div>
     </div>
   </div>
@@ -64,11 +72,13 @@ export default {
       profile: {},
       favoriteMovies: [],
       baseUrlPoster: 'https://image.tmdb.org/t/p/original',
-      showAllFavoriteMovies: false
+      showAllFavoriteMovies: false,
+      lists: []
     }
   },
   created () {
     this.getFavoriteMovies()
+    this.getLists()
   },
   methods: {
     getFavoriteMovies () {
@@ -81,6 +91,19 @@ export default {
         .then((response) => {
           if (response.data.length > 0) {
             this.favoriteMovies = response.data
+          }
+        })
+    },
+    getLists () {
+      axios.get(`http://localhost:3001/lists`,
+        {
+          headers: {
+            authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+        .then((response) => {
+          if (response.data.length > 0) {
+            this.lists = response.data
           }
         })
     }
