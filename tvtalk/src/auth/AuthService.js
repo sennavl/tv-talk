@@ -33,7 +33,7 @@ export default class AuthService {
       audience: AUTH_CONFIG.apiUrl,
       responseType: 'token id_token',
       params: {
-        scope: 'openid profile read:messages'
+        scope: 'openid profile'
       }
     }
   })

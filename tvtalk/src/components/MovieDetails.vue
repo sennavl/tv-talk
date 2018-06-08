@@ -4,10 +4,16 @@
       <a @click.stop.prevent="test">&lt; back</a>
       <div class="title-rating">
         <h1>{{ movie.title }} ({{ getYear(movie.release_date) }})</h1>
-        <div class="rating">
-          <i class="material-icons">star_rate</i>
-          <p v-if="!rated"><a @click="openRatingModal()">Add rating</a></p>
-          <p v-if="rated"><a @click="openEditRatingModal()">Edit rating</a></p>
+        <div class="user-interaction">
+          <div class="favorite">
+            <i class="material-icons favoriteEmpty" v-if="!favorited" @mouseover="changeFavoriteIcon()" @mouseleave="changeFavoriteIcon()" @click="addToFavorites()">{{ favorite ? 'favorite_border': 'favorite'}}</i>
+            <i class="material-icons favoriteFilled" v-if="favorited" @mouseover="changeFavoriteIcon()" @mouseleave="changeFavoriteIcon()" @click="removeFromFavorites()">{{ !favorite ? 'favorite_border': 'favorite'}}</i>
+          </div>
+          <div class="rating">
+            <i class="material-icons">star_rate</i>
+            <p v-if="!rated"><a @click="openRatingModal()">Add rating</a></p>
+            <p v-if="rated"><a @click="openEditRatingModal()">Edit rating</a></p>
+          </div>
         </div>
       </div>
       <div class="subtitles">
@@ -84,24 +90,20 @@ export default {
       possibleRatings: [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5],
       ratingError: false,
       rated: false,
-      profile: {}
+      profile: {},
+      favorite: true,
+      favorited: false
     }
   },
   watch: {
-    profile: function () {
-      if (this.profile.sub) {
+    movie: function () {
+      if (this.movie) {
         this.checkRating()
+        this.checkFavorite()
       }
     }
   },
   created () {
-    if (this.authenticated) {
-      this.auth.getProfile((err, profile) => {
-        if (err) return console.log(err)
-        this.profile = profile
-      })
-    }
-
     axios
       .get(
         'https://api.themoviedb.org/3/movie/' + this.id + '?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US'
@@ -112,14 +114,55 @@ export default {
       .catch(e => {
         this.errors.push(e)
       })
+
+    if (this.authenticated) {
+      this.auth.getProfile((err, profile) => {
+        if (err) return console.log(err)
+        this.profile = profile
+      })
+    }
   },
   methods: {
     login,
+    addToFavorites () {
+      axios.post(`http://localhost:3001/favorite/add`, {
+        movie_id: this.movie.id,
+        title: this.movie.title,
+        poster_path: this.movie.poster_path
+      },
+      {
+        headers: {
+          authorization: 'Bearer ' + localStorage.getItem('access_token')
+        }
+      })
+        .then((response) => {
+          if (response.status === 200) {
+            this.favorited = true
+          }
+        })
+    },
+    removeFromFavorites () {
+      axios.delete(`http://localhost:3001/favorite/delete/${this.movie.id}`,
+        {
+          headers: {
+            authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            this.favorited = false
+          }
+        })
+    },
     checkRating () {
-      if (this.authenticated) {
-        axios.get(`http://localhost:3001/rating?user_id=${this.profile.sub.substring(6, this.profile.sub.length)}&movie_id=${this.movie.id}`)
+      if (this.authenticated && typeof this.movie.id !== 'undefined') {
+        axios.get(`http://localhost:3001/rating?movie_id=${this.movie.id}`,
+          {
+            headers: {
+              authorization: 'Bearer ' + localStorage.getItem('access_token')
+            }
+          })
           .then((response) => {
-            console.log(response.data)
             if (response.data !== null) {
               this.rated = true
             } else {
@@ -127,6 +170,21 @@ export default {
             }
           })
       }
+    },
+    checkFavorite () {
+      axios.get(`http://localhost:3001/favorite?movie_id=${this.movie.id}`,
+        {
+          headers: {
+            authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+        .then((response) => {
+          if (response.data !== null) {
+            this.favorited = true
+          } else {
+            this.favorited = false
+          }
+        })
     },
     openRatingModal () {
       if (this.authenticated) {
@@ -175,7 +233,6 @@ export default {
     submitRating () {
       if (this.rating !== 'No rating selected' && this.possibleRatings.indexOf(this.rating) !== -1) {
         axios.post('http://localhost:3001/rating/add', {
-          user_id: this.auth.userProfile.sub.substring(6, this.auth.userProfile.sub.length),
           movie_id: this.movie.id,
           rating: this.rating
         },
@@ -185,11 +242,16 @@ export default {
           }
         }
         ).then((response) => {
-          console.log(response)
+          if (response.status === 200) {
+            this.showModal = false
+          }
         })
       } else {
         this.ratingError = true
       }
+    },
+    changeFavoriteIcon () {
+      this.favorite = !this.favorite
     }
   },
   filters: {
@@ -250,6 +312,30 @@ h1 {
 .title-rating {
   display: flex;
   justify-content: space-between;
+
+  .user-interaction {
+    margin: 0;
+    display: flex;
+  }
+
+  .favorite {
+    margin: 0;
+
+    i {
+      margin-top: 17px;
+      font-size: 30px;
+    }
+
+    .favoriteEmpty:hover {
+      color: red;
+      cursor: pointer;
+    }
+
+    .favoriteFilled {
+      color: red;
+      cursor: pointer;
+    }
+  }
 
   .rating {
     margin: 0;

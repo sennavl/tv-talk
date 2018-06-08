@@ -131,7 +131,12 @@ export default {
       this.endDate = this.$route.query.endDate
     }
     if (this.$route.query.genres) {
-      this.genre = this.$route.query.genres
+      this.genre = []
+      if (this.$route.query.genres.length > 1) {
+        this.genre = this.$route.query.genres
+      } else {
+        this.genre.push(this.$route.query.genres)
+      }
     }
     if (this.$route.query.sorted) {
       this.selectedSorting = this.$route.query.sorted
@@ -336,6 +341,11 @@ export default {
     .title-rating {
       display: flex;
       justify-content: space-between;
+
+      h3 {
+        font-size: 1.3em;
+        margin-bottom: 1.5em;
+      }
 
       .icon-subtitle i {
         vertical-align: text-bottom;

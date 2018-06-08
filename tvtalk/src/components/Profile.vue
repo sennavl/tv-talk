@@ -15,14 +15,38 @@
           <label><i class="glyphicon glyphicon-envelope"></i> Email</label>
           <h3 class="email">{{ profile.name }}</h3>
           </div>
-          <pre class="full-profile">{{ profile }}</pre>
         </div>
+        <section>
+          <h2>Favorite movies</h2>
+          <section class="tiles" v-if="favoriteMovies && favoriteMovies.length > 0">
+            <article v-for="(movie, index) of favoriteMovies" :key="movie.id" v-if="(!showAllFavoriteMovies && index < 3) || showAllFavoriteMovies">
+              <span class="image">
+                <img :src=baseUrlPoster+movie.poster_path alt="" />
+              </span>
+              <router-link :to="{ name: 'movieDetails', params: { id: movie.movie_id }}">
+                <h2>{{movie.title}}</h2>
+                <div class="content">
+                  <p>Click to see more</p>
+                </div>
+              </router-link>
+            </article>
+            <article>
+              <p v-if="!showAllFavoriteMovies"><a @click="showAllFavoriteMovies = true">Show all</a></p>
+              <p v-if="showAllFavoriteMovies"><a @click="showAllFavoriteMovies = false">Show less</a></p>
+            </article>
+          </section>
+          <section v-else>
+            <p>You haven't added any movie to your favorites yet.</p>
+          </section>
+        </section>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   props: ['auth'],
   data () {
@@ -37,7 +61,28 @@ export default {
       })
     }
     return {
-      profile: {}
+      profile: {},
+      favoriteMovies: [],
+      baseUrlPoster: 'https://image.tmdb.org/t/p/original',
+      showAllFavoriteMovies: false
+    }
+  },
+  created () {
+    this.getFavoriteMovies()
+  },
+  methods: {
+    getFavoriteMovies () {
+      axios.get(`http://localhost:3001/favorites/movies`,
+        {
+          headers: {
+            authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+        .then((response) => {
+          if (response.data.length > 0) {
+            this.favoriteMovies = response.data
+          }
+        })
     }
   }
 }
@@ -51,5 +96,9 @@ export default {
 
   .panel-body h3 {
     margin-top: 0;
+  }
+
+  a:hover {
+    cursor: pointer;
   }
 </style>

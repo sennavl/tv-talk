@@ -97,4 +97,9 @@ h2 {
 .tiles {
   margin-top: 0px;
 }
+
+.tiles h2 {
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: black;
+}
 </style>

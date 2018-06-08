@@ -112,9 +112,8 @@ export default {
     login,
     checkRating () {
       if (this.authenticated) {
-        axios.get(`http://localhost:3001/rating?user_id=${this.profile.sub.substring(6, this.profile.sub.length)}&movie_id=${this.movie.id}`)
+        axios.get(`http://localhost:3001/ratingTv?user_id=${this.profile.sub.substring(6, this.profile.sub.length)}&serie_id=${this.movie.id}`)
           .then((response) => {
-            console.log(response.data)
             if (response.data !== null) {
               this.rated = true
             } else {
@@ -147,7 +146,14 @@ export default {
     getTimeFromMins (mins) {
       const h = mins / 60 | 0
       const m = mins % 60 | 0
-      const hoursAndMinutes = moment.utc().hours(h).minutes(m).format('hh:mm')
+      let hoursAndMinutes = 0
+
+      if (h > 0) {
+        hoursAndMinutes = moment.utc().hours(h).minutes(m).format('hh:mm')
+      } else {
+        hoursAndMinutes = moment.utc().minutes(m).format('00:mm')
+      }
+
       return hoursAndMinutes.replace(':', 'h')
     },
     getGenres () {
@@ -158,6 +164,7 @@ export default {
           genresString += ', '
         }
       }
+
       return genresString
     },
     showCurrentRating (rating) {
@@ -169,9 +176,9 @@ export default {
     },
     submitRating () {
       if (this.rating !== 'No rating selected' && this.possibleRatings.indexOf(this.rating) !== -1) {
-        axios.post('http://localhost:3001/rating/add', {
+        axios.post('http://localhost:3001/ratingTv/add', {
           user_id: this.auth.userProfile.sub.substring(6, this.auth.userProfile.sub.length),
-          movie_id: this.movie.id,
+          serie_id: this.movie.id,
           rating: this.rating
         },
         {
@@ -180,7 +187,9 @@ export default {
           }
         }
         ).then((response) => {
-          console.log(response)
+          if (response.status === 200) {
+            this.showModal = false
+          }
         })
       } else {
         this.ratingError = true
