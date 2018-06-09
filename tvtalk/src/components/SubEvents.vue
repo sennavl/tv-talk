@@ -5,21 +5,31 @@
         <header>
           <h1>{{ eventTitle}}</h1>
         </header>
+
         <section>
-          <h2>other title</h2>
-          <section class="tiles" v-if="subEvents.length > 0">
-            <article >
-              <span class="image">
-                <img src="/static/assets/images/WorldCup.png" alt="" />
-              </span>
-              <router-link v-for="subEvent of subEvents" :key="subEvent.id" :to="{ name: 'ChatroomOverview', params: { id: subEvent._id }}">
-                <h2>{{ subEvent.title }}</h2>
-                <div class="content">
-                  <p>{{ convertDate(subEvent.start) + ' - ' + convertDate(subEvent.end) }}</p>
-                </div>
-              </router-link>
-            </article>
-          </section>
+          <h2>Sub events</h2>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Start date</th>
+                  <th>End date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-if="subEvents.length > 0" v-for="event of subEvents" :key="event.id">
+                  <td width="63%"><router-link :to="{ name: 'ChatroomOverview', params: { id: event._id }}">{{ event.title }}</router-link></td>
+                  <td width="15%">{{ convertDate(event.datetime_start) }}</td>
+                  <td width="15%">{{ convertDate(event.datetime_end) }}</td>
+                  <td width="7%"><router-link :to="{ name: 'ChatroomOverview', params: { id: event._id }}" style="color: green; border-bottom: none;">View</router-link></td>
+                </tr>
+                <tr v-if="subEvents.length === 0">
+                  <td>There are no upcoming events</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
       </div>
     </div>
@@ -64,7 +74,7 @@ export default {
     },
     convertDate (date) {
       date = moment(date)
-      return date.format('DD-MM-YYYY')
+      return date.format('DD-MM-YYYY / HH:mm')
     }
   }
 }

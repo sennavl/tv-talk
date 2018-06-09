@@ -294,9 +294,22 @@ app.get('/favorites/series', checkJwt, (req, res) => {
 		.catch(err => res.status(500, err.message).end());
 })
 
-app.get('/events', (req, res) => {
+// get all events that haven't started yet
+app.get('/events/upcoming', (req, res) => {
 	Event
-		.find()
+		.find({ start: { '$gt': new Date() } })
+		.sort({start: 1})
+		.then((events) => {
+			res.json(events);
+		})
+		.catch(err => res.status(500, err.message).end());
+});
+
+// get all events that are currently running
+app.get('/events/running', (req, res) => {
+	Event
+		.find({ start: { '$lte': new Date() }, end: { '$gte': new Date() } })
+		.sort({start: 1})
 		.then((events) => {
 			res.json(events);
 		})

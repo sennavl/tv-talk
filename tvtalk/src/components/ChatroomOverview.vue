@@ -3,12 +3,28 @@
     <div id="main">
       <div class="inner">
         <h1>Chatrooms overview</h1>
-        <div class="chatrooms">
-          <ul>
-            <li v-if="rooms && Object.keys(rooms).length > 0" v-for="chatroom in chatrooms" :key="chatroom.id"><router-link :to="{ name: 'Chatroom', params: { id: chatroom._id } }" :class="typeof rooms[chatroom._id] !== 'undefined' && rooms[chatroom._id].length > 2 ? 'not-active': ''">{{ chatroom.name }}</router-link>Count: {{ typeof rooms[chatroom._id] !== 'undefined' ? rooms[chatroom._id].length : 0 }}</li>
-            <li v-else v-for="chatroom in chatrooms" :key="chatroom.id"><router-link :to="{ name: 'Chatroom', params: { id: chatroom._id } }">{{ chatroom.name }}</router-link>Count: {{ 0 }}</li>
-          </ul>
-        </div>
+
+        <section>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th v-if="chatrooms.length > 0">Name</th>
+                  <th v-if="chatrooms.length > 0">Room count</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-if="chatrooms.length > 0" v-for="chatroom in chatrooms" :key="chatroom.id">
+                  <td width="73%"><router-link :to="{ name: 'Chatroom', params: { id: chatroom._id } }" :class="typeof rooms[chatroom._id] !== 'undefined' && rooms[chatroom._id].length > 2 ? 'not-active': ''">{{ chatroom.name }}</router-link></td>
+                  <td width="27%">{{ typeof rooms[chatroom._id] !== 'undefined' ? rooms[chatroom._id].length : 0 }}</td>
+                </tr>
+                <tr v-if="chatrooms.length === 0">
+                  <td>There are no chatrooms available</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
     </div>
   </div>
