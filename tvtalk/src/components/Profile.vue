@@ -16,6 +16,7 @@
           <h3 class="email">{{ profile.name }}</h3>
           </div>
         </div>
+
         <section>
           <h2>Favorite movies</h2>
           <section class="tiles" v-if="favoriteMovies && favoriteMovies.length > 0">
@@ -39,6 +40,31 @@
             <p>You haven't added any movie to your favorites yet.</p>
           </section>
         </section>
+
+        <section>
+          <h2>Favorite tv series</h2>
+          <section class="tiles" v-if="favoriteSeries && favoriteSeries.length > 0">
+            <article v-for="(movie, index) of favoriteSeries" :key="movie.id" v-if="(!showAllFavoriteSeries && index < 3) || showAllFavoriteSeries">
+              <span class="image">
+                <img :src=baseUrlPoster+movie.poster_path alt="" />
+              </span>
+              <router-link :to="{ name: 'seriesDetails', params: { id: movie.serie_id }}">
+                <h2>{{movie.title}}</h2>
+                <div class="content">
+                  <p>Click to see more</p>
+                </div>
+              </router-link>
+            </article>
+            <article>
+              <p v-if="!showAllFavoriteSeries"><a @click="showAllFavoriteSeries = true">Show all</a></p>
+              <p v-if="showAllFavoriteSeries"><a @click="showAllFavoriteSeries = false">Show less</a></p>
+            </article>
+          </section>
+          <section v-else>
+            <p>You haven't added any tv serie to your favorites yet.</p>
+          </section>
+        </section>
+
         <section>
           <h2>Lists</h2>
           <ul v-if="lists.length > 0">
@@ -73,11 +99,14 @@ export default {
       favoriteMovies: [],
       baseUrlPoster: 'https://image.tmdb.org/t/p/original',
       showAllFavoriteMovies: false,
-      lists: []
+      showAllFavoriteSeries: false,
+      lists: [],
+      favoriteSeries: []
     }
   },
   created () {
     this.getFavoriteMovies()
+    this.getFavoriteSeries()
     this.getLists()
   },
   methods: {
@@ -91,6 +120,19 @@ export default {
         .then((response) => {
           if (response.data.length > 0) {
             this.favoriteMovies = response.data
+          }
+        })
+    },
+    getFavoriteSeries () {
+      axios.get(`http://localhost:3001/favorites/series`,
+        {
+          headers: {
+            authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+        .then((response) => {
+          if (response.data.length > 0) {
+            this.favoriteSeries = response.data
           }
         })
     },

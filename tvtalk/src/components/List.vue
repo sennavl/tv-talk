@@ -19,6 +19,23 @@
             </article>
           </section>
         </section>
+
+        <section v-if="series.length > 0">
+          <h2>Series</h2>
+          <section class="tiles" v-if="series && series.length">
+            <article v-for="serie of series" :key="serie.id">
+              <span class="image">
+                <img :src=baseUrlPoster+serie.poster_path alt="" />
+              </span>
+              <router-link :to="{ name: 'seriesDetails', params: { id: serie.serie_id }}">
+                <h2>{{serie.title}}</h2>
+                <div class="content">
+                  <p>Click to see more</p>
+                </div>
+              </router-link>
+            </article>
+          </section>
+        </section>
       </div>
     </div>
   </div>
@@ -37,10 +54,11 @@ export default {
     }
   },
   created () {
-    this.getList()
+    this.getMoviesFromList()
+    this.getSeriesFromList()
   },
   methods: {
-    getList () {
+    getMoviesFromList () {
       axios.get(`http://localhost:3001/list/movies?list_id=${this.id}`,
         {
           headers: {
@@ -50,6 +68,19 @@ export default {
         .then((response) => {
           if (response.data.length > 0) {
             this.movies = response.data
+          }
+        })
+    },
+    getSeriesFromList () {
+      axios.get(`http://localhost:3001/list/series?list_id=${this.id}`,
+        {
+          headers: {
+            authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+        .then((response) => {
+          if (response.data.length > 0) {
+            this.series = response.data
           }
         })
     }

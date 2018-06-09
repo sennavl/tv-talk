@@ -76,9 +76,12 @@
         <div class="modal-body">
           <p v-if="lists.length === 0">You don't have any lists yet</p>
           <p v-if="lists.length > 0">Select one of your lists</p>
-          <ul v-if="lists.length > 0">
-            <li v-for="list in lists" :key="list.id"><a @click="addMovieToList(list._id)">{{ list.name }}</a></li>
-          </ul>
+
+          <div v-for="list in lists" :key="list.id">
+            <input type="checkbox" v-model="selectedList" :id="'list_' + list._id" :value="list._id"  />
+            <label :for="'list_' + list._id">{{ list.name }}</label>
+          </div>
+
           <input type="text" name="list-name" id="list-name" value="" placeholder="List name" style="margin-bottom: 10px" v-model="listTitle" />
           <input type="submit" value="Add list" class="special" @click="createList()" v-if="listTitle.length > 0" />
           <input type="submit" value="Add list" class="special disabled" v-if="listTitle.length === 0" />
@@ -118,7 +121,9 @@ export default {
       favorited: false,
       showListModal: false,
       lists: [],
-      listTitle: ''
+      listTitle: '',
+      selectedList: [],
+      setSelectedList: false
     }
   },
   watch: {
@@ -127,6 +132,22 @@ export default {
         this.checkRating()
         this.checkFavorite()
       }
+    },
+    selectedList: function (newList, oldList) {
+      // addition
+      if (newList.length > oldList.length && this.setSelectedList) {
+        console.log('toevoeging')
+        // get list that was just checked
+        const addedList = newList.slice(-1)
+        // add movie to that list
+        this.addMovieToList(addedList[0])
+      } else if (oldList.length > newList.length && this.setSelectedList) { // deletion
+        console.log('verwijdering')
+        const removedList = oldList.slice(-1)
+        this.removeMovieFromList(removedList[0])
+        // remove movie from list
+      }
+      this.setSelectedList = true
     }
   },
   created () {
@@ -136,6 +157,9 @@ export default {
       )
       .then(response => {
         this.movie = response.data
+      })
+      .then(() => {
+        this.getListIds()
       })
       .catch(e => {
         this.errors.push(e)
@@ -150,6 +174,21 @@ export default {
   },
   methods: {
     login,
+    getListIds () {
+      axios.get(`http://localhost:3001/lists/movie?movie_id=${this.movie.id}`,
+        {
+          headers: {
+            authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+        .then((response) => {
+          const tempArr = []
+          response.data.forEach(element => {
+            tempArr.push(element.list_id)
+          })
+          this.selectedList = tempArr
+        })
+    },
     addToFavorites () {
       axios.post(`http://localhost:3001/favorite/add`, {
         movie_id: this.movie.id,
@@ -335,6 +374,34 @@ export default {
         .then((response) => {
           if (response.status === 200) {
             this.showListModal = false
+          }
+        })
+    },
+    removeMovieFromList (listId) {
+      axios.delete(`http://localhost:3001/list/delete/movie/${this.movie.id}?list_id=${listId}`,
+        {
+          headers: {
+            authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            this.showListModal = false
+          }
+        })
+    },
+    getList (listId) {
+      axios.get(`http://localhost:3001/list/movies?list_id=${listId}`,
+        {
+          headers: {
+            authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+        .then((response) => {
+          if (response.data.length > 0) {
+            return true
+          } else {
+            return false
           }
         })
     }

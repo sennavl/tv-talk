@@ -5,8 +5,10 @@ const Event = require('./models/event');
 const SubEvent = require('./models/subEvent');
 const Chatroom = require('./models/chatroom');
 const Favorite = require('./models/favorite');
+const FavoriteTv = require('./models/favoriteTv');
 const List = require('./models/list');
 const MoviesList = require('./models/moviesList');
+const SeriesList = require('./models/seriesList');
 const app = express();
 const jwt = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
@@ -77,6 +79,23 @@ app.post('/favorite/add', checkJwt, (req, res) => {
 		})
 });
 
+// add tv serie to favorites
+app.post('/favoriteTv/add', checkJwt, (req, res) => {
+	let favoriteObj = req.body;
+	favoriteObj.date = new Date();
+	favoriteObj.user_id = req.user.sub.substring(6, req.user.sub.length);
+	let newFavorite = new FavoriteTv(req.body);
+	newFavorite
+		.save()
+		.then((rating) => {
+			res.json(rating);
+		})
+		.catch(err => {
+			console.log(err.message)
+			res.status(500, err.message).end();
+		})
+});
+
 // Add list
 app.post('/list/add', checkJwt, (req, res) => {
 	let listObj = req.body;
@@ -109,6 +128,22 @@ app.post('/list/addMovie', checkJwt, (req, res) => {
 		})
 });
 
+// Add movie to list
+app.post('/list/addTvSerie', checkJwt, (req, res) => {
+	let movieObj = req.body;
+	movieObj.user_id = req.user.sub.substring(6, req.user.sub.length);
+	let newMovie = new SeriesList(req.body);
+	newMovie
+		.save()
+		.then((movie) => {
+			res.json(movie);
+		})
+		.catch(err => {
+			console.log(err.message)
+			res.status(500, err.message).end();
+		})
+});
+
 // Get lists
 app.get('/lists', checkJwt, (req, res) => {
 	List
@@ -129,6 +164,50 @@ app.get('/list/movies', checkJwt, (req, res) => {
 		.catch(err => res.status(500, err.message).end());
 })
 
+// get series from list
+app.get('/list/series', checkJwt, (req, res) => {
+	SeriesList
+		.find({ list_id: req.query.list_id })
+		.then((movies) => {
+			res.json(movies);
+		})
+		.catch(err => res.status(500, err.message).end());
+})
+
+app.get('/lists/movie', checkJwt, (req, res) => {
+	MoviesList
+		.find({ user_id: req.user.sub.substring(6, req.user.sub.length), movie_id: req.query.movie_id }, { list_id: 1})
+		.then((listIds) => {
+			res.json(listIds)
+		})
+		.catch(err => res.status(500, err.message).end());
+})
+
+app.get('/lists/serie', checkJwt, (req, res) => {
+	SeriesList
+		.find({ user_id: req.user.sub.substring(6, req.user.sub.length), serie_id: req.query.serie_id }, { list_id: 1})
+		.then((listIds) => {
+			res.json(listIds)
+		})
+		.catch(err => res.status(500, err.message).end());
+})
+
+// remove movie from list
+app.delete('/list/delete/movie/:movie_id', checkJwt, (req, res) => {
+	MoviesList
+	  .deleteOne({ movie_id: req.params.movie_id, user_id: req.user.sub.substring(6, req.user.sub.length), list_id: req.query.list_id })
+	  .then(() => res.status(200).end())
+	  .catch(err => res.status(500, err.message).end())
+});
+
+// remove serie from list
+app.delete('/list/delete/serie/:serie_id', checkJwt, (req, res) => {
+	SeriesList
+	  .deleteOne({ serie_id: req.params.serie_id, user_id: req.user.sub.substring(6, req.user.sub.length), list_id: req.query.list_id })
+	  .then(() => res.status(200).end())
+	  .catch(err => res.status(500, err.message).end())
+});
+
 // get favorite for a certain user and movie (to check if user already favorited the movie)
 app.get('/favorite', checkJwt, (req, res) => {
 	Favorite
@@ -140,6 +219,21 @@ app.get('/favorite', checkJwt, (req, res) => {
 				res.json(null);
 			}
 		})
+		.catch(err => res.status(500, err.message).end());
+})
+
+// get favorite for a certain user and serie (to check if user already favorited the serie)
+app.get('/favoriteTv', checkJwt, (req, res) => {
+	FavoriteTv
+		.findOne({ user_id: req.user.sub.substring(6, req.user.sub.length), serie_id: req.query.serie_id })
+		.then((favorite) => {
+			if (favorite) {
+				res.json(favorite);
+			} else {
+				res.json(null);
+			}
+		})
+		.catch(err => res.status(500, err.message).end());
 })
 
 // remove movie from favorites
@@ -150,9 +244,27 @@ app.delete('/favorite/delete/:movie_id', checkJwt, (req, res) => {
 	  .catch(err => res.status(500, err.message).end())
 });
 
+// remove tv serie from favorites
+app.delete('/favoriteTv/delete/:serie_id', checkJwt, (req, res) => {
+	FavoriteTv
+	  .deleteOne({ serie_id: req.params.serie_id, user_id: req.user.sub.substring(6, req.user.sub.length) })
+	  .then(() => res.status(200).end())
+	  .catch(err => res.status(500, err.message).end())
+});
+
 // get favorite movies
 app.get('/favorites/movies', checkJwt, (req, res) => {
 	Favorite
+		.find({ user_id: req.user.sub.substring(6, req.user.sub.length) })
+		.then((favorites) => {
+			res.json(favorites)
+		})
+		.catch(err => res.status(500, err.message).end());
+})
+
+// get favorite series
+app.get('/favorites/series', checkJwt, (req, res) => {
+	FavoriteTv
 		.find({ user_id: req.user.sub.substring(6, req.user.sub.length) })
 		.then((favorites) => {
 			res.json(favorites)

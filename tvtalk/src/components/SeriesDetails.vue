@@ -4,10 +4,19 @@
       <a @click.stop.prevent="test">&lt; back</a>
       <div class="title-rating">
         <h1>{{ movie.name }} ({{ getYear(movie.first_air_date) }})</h1>
-        <div class="rating">
-          <i class="material-icons">star_rate</i>
-          <p v-if="!rated"><a @click="openRatingModal()">Add rating</a></p>
-          <p v-if="rated"><a @click="openEditRatingModal()">Edit rating</a></p>
+        <div class="user-interaction">
+          <div class="playlist">
+            <i class="material-icons" @click="openListModal()">playlist_add</i>
+          </div>
+          <div class="favorite">
+            <i class="material-icons favoriteEmpty" v-if="!favorited" @mouseover="changeFavoriteIcon()" @mouseleave="changeFavoriteIcon()" @click="addToFavorites()">{{ favorite ? 'favorite_border': 'favorite'}}</i>
+            <i class="material-icons favoriteFilled" v-if="favorited" @mouseover="changeFavoriteIcon()" @mouseleave="changeFavoriteIcon()" @click="removeFromFavorites()">{{ !favorite ? 'favorite_border': 'favorite'}}</i>
+          </div>
+          <div class="rating">
+            <i class="material-icons">star_rate</i>
+            <p v-if="!rated"><a @click="openRatingModal()">Add rating</a></p>
+            <p v-if="rated"><a @click="openEditRatingModal()">Edit rating</a></p>
+          </div>
         </div>
       </div>
       <div class="subtitles">
@@ -52,6 +61,29 @@
       </div>
     </div>
 
+    <div id="myModal" class="modal" v-if="showListModal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="close" @click="showListModal = false">&times;</span>
+          <h2>Add item to list</h2>
+        </div>
+        <div class="modal-body">
+          <p v-if="lists.length === 0">You don't have any lists yet</p>
+          <p v-if="lists.length > 0">Select one of your lists</p>
+
+          <div v-for="list in lists" :key="list.id">
+            <input type="checkbox" v-model="selectedList" :id="'list_' + list._id" :value="list._id"  />
+            <label :for="'list_' + list._id">{{ list.name }}</label>
+          </div>
+
+          <input type="text" name="list-name" id="list-name" value="" placeholder="List name" style="margin-bottom: 10px" v-model="listTitle" />
+          <input type="submit" value="Add list" class="special" @click="createList()" v-if="listTitle.length > 0" />
+          <input type="submit" value="Add list" class="special disabled" v-if="listTitle.length === 0" />
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -79,14 +111,41 @@ export default {
       possibleRatings: [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5],
       ratingError: false,
       rated: false,
-      profile: {}
+      profile: {},
+      lists: [],
+      showListModal: false,
+      listTitle: '',
+      selectedList: [],
+      favorite: true,
+      favorited: false,
+      setSelectedList: false
     }
   },
   watch: {
+    movie: function () {
+      if (this.movie) {
+        this.checkRating()
+        this.checkFavorite()
+      }
+    },
     profile: function () {
       if (this.profile.sub) {
         this.checkRating()
       }
+    },
+    selectedList: function (newList, oldList) {
+      // addition
+      if (newList.length > oldList.length && this.setSelectedList) {
+        // get list that was just checked
+        const addedList = newList.slice(-1)
+        // add movie to that list
+        this.addTvSerieToList(addedList[0])
+      } else if (oldList.length > newList.length && this.setSelectedList) { // deletion
+        const removedList = oldList.slice(-1)
+        this.removeTvSerieFromList(removedList[0])
+        // remove movie from list
+      }
+      this.setSelectedList = true
     }
   },
   created () {
@@ -104,12 +163,60 @@ export default {
       .then(response => {
         this.movie = response.data
       })
+      .then(() => {
+        this.getListIds()
+      })
       .catch(e => {
         this.errors.push(e)
       })
   },
   methods: {
     login,
+    getListIds () {
+      axios.get(`http://localhost:3001/lists/serie?serie_id=${this.movie.id}`,
+        {
+          headers: {
+            authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+        .then((response) => {
+          const tempArr = []
+          response.data.forEach(element => {
+            tempArr.push(element.list_id)
+          })
+          this.selectedList = tempArr
+        })
+    },
+    addToFavorites () {
+      axios.post(`http://localhost:3001/favoriteTv/add`, {
+        serie_id: this.movie.id,
+        title: this.movie.name,
+        poster_path: this.movie.poster_path
+      },
+      {
+        headers: {
+          authorization: 'Bearer ' + localStorage.getItem('access_token')
+        }
+      })
+        .then((response) => {
+          if (response.status === 200) {
+            this.favorited = true
+          }
+        })
+    },
+    removeFromFavorites () {
+      axios.delete(`http://localhost:3001/favoriteTv/delete/${this.movie.id}`,
+        {
+          headers: {
+            authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            this.favorited = false
+          }
+        })
+    },
     checkRating () {
       if (this.authenticated) {
         axios.get(`http://localhost:3001/ratingTv?user_id=${this.profile.sub.substring(6, this.profile.sub.length)}&serie_id=${this.movie.id}`)
@@ -122,9 +229,35 @@ export default {
           })
       }
     },
+    checkFavorite () {
+      axios.get(`http://localhost:3001/favoriteTv?serie_id=${this.movie.id}`,
+        {
+          headers: {
+            authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+        .then((response) => {
+          if (response.data !== null) {
+            this.favorited = true
+          } else {
+            this.favorited = false
+          }
+        })
+    },
     openRatingModal () {
       if (this.authenticated) {
         this.showModal = true
+      } else {
+        if (typeof (Storage) !== 'undefined') {
+          localStorage.setItem('redirectUrl', this.$route.path)
+        }
+        this.login()
+      }
+    },
+    openListModal () {
+      if (this.authenticated) {
+        this.getLists()
+        this.showListModal = true
       } else {
         if (typeof (Storage) !== 'undefined') {
           localStorage.setItem('redirectUrl', this.$route.path)
@@ -194,6 +327,84 @@ export default {
       } else {
         this.ratingError = true
       }
+    },
+    changeFavoriteIcon () {
+      this.favorite = !this.favorite
+    },
+    getLists () {
+      axios.get(`http://localhost:3001/lists`,
+        {
+          headers: {
+            authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+        .then((response) => {
+          if (response.data.length > 0) {
+            this.lists = response.data
+          }
+        })
+    },
+    createList () {
+      axios.post(`http://localhost:3001/list/add`,
+        {
+          name: this.listTitle
+        },
+        {
+          headers: {
+            authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            this.getLists()
+          }
+        })
+    },
+    addTvSerieToList (listId) {
+      axios.post(`http://localhost:3001/list/addTvSerie`, {
+        serie_id: this.movie.id,
+        list_id: listId,
+        title: this.movie.name,
+        poster_path: this.movie.poster_path
+      },
+      {
+        headers: {
+          authorization: 'Bearer ' + localStorage.getItem('access_token')
+        }
+      })
+        .then((response) => {
+          if (response.status === 200) {
+            this.showListModal = false
+          }
+        })
+    },
+    removeTvSerieFromList (listId) {
+      axios.delete(`http://localhost:3001/list/delete/serie/${this.movie.id}?list_id=${listId}`,
+        {
+          headers: {
+            authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            this.showListModal = false
+          }
+        })
+    },
+    getList (listId) {
+      axios.get(`http://localhost:3001/list/series?list_id=${listId}`,
+        {
+          headers: {
+            authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+        .then((response) => {
+          if (response.data.length > 0) {
+            return true
+          } else {
+            return false
+          }
+        })
     }
   }
 }
@@ -249,6 +460,40 @@ h1 {
 .title-rating {
   display: flex;
   justify-content: space-between;
+
+  .user-interaction {
+    margin: 0;
+    display: flex;
+  }
+
+  .playlist {
+    margin: 0;
+
+    i {
+      margin-top: 14px;
+      font-size: 36px;
+      cursor: pointer;
+    }
+  }
+
+  .favorite {
+    margin: 0;
+
+    i {
+      margin-top: 17px;
+      font-size: 30px;
+    }
+
+    .favoriteEmpty:hover {
+      color: red;
+      cursor: pointer;
+    }
+
+    .favoriteFilled {
+      color: red;
+      cursor: pointer;
+    }
+  }
 
   .rating {
     margin: 0;
