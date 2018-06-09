@@ -16,7 +16,7 @@
             <li><router-link to="/events">Live events</router-link></li>
             <li>|</li>
             <li><a v-if="!authenticated" @click.stop.prevent="login()">Log in</a></li>
-            <li v-if="authenticated" style="display: flex;"><i class="material-icons">perm_identity</i><router-link to="/profile" style="padding-left: 10px;">Profile</router-link></li>
+            <li v-if="authenticated" style="display: flex; padding-left: 1.2em;"><i class="material-icons">perm_identity</i><router-link to="/profile" style="padding-left: 10px;">Profile</router-link></li>
             <li style="display: flex;" v-if="authenticated"><i class="material-icons">exit_to_app</i><a @click.stop.prevent="logout()" style="padding-left: 10px;">Log out</a></li>
           </ul>
         </nav>

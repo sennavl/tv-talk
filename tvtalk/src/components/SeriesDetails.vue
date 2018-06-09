@@ -123,14 +123,11 @@ export default {
   },
   watch: {
     movie: function () {
+      console.log('detect change in movie')
       if (this.movie) {
+        console.log('movie is set', this.movie)
         this.checkRating()
         this.checkFavorite()
-      }
-    },
-    profile: function () {
-      if (this.profile.sub) {
-        this.checkRating()
       }
     },
     selectedList: function (newList, oldList) {
@@ -218,8 +215,9 @@ export default {
         })
     },
     checkRating () {
-      if (this.authenticated) {
-        axios.get(`http://localhost:3001/ratingTv?user_id=${this.profile.sub.substring(6, this.profile.sub.length)}&serie_id=${this.movie.id}`)
+      console.log('checkrating')
+      if (this.authenticated && typeof this.movie.id !== 'undefined') {
+        axios.get(`http://localhost:3001/ratingTv?user_id=${this.auth.userProfile.sub.substring(6, this.auth.userProfile.sub.length)}&serie_id=${this.movie.id}`)
           .then((response) => {
             if (response.data !== null) {
               this.rated = true

@@ -9,7 +9,7 @@ const SeriesListSchema = mongoose.Schema({
   poster_path: { type: String, required: true }
 });
 
-SeriesListSchema.index({ user_id: 1, serie_id: 1 }, { unique: true });
+SeriesListSchema.index({ user_id: 1, serie_id: 1, list_id: 1 }, { unique: true });
 
 const SeriesList = mongoose.model('SeriesList', SeriesListSchema);
 module.exports = SeriesList;

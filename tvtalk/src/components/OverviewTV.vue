@@ -4,7 +4,9 @@
     <h1>Overview - tv series</h1>
     <div class="content">
       <div class="filter">
-        <h2>Filter</h2>
+        <div class="filter-title">
+          <i class="material-icons">filter_list</i><h2>Filter</h2>
+        </div>
         <p class="title">Release date</p>
         <p class="subtitle">From</p>
         <input type="date" class="date-input" v-model="startDate" placeholder="Name" @blur="startDateChanged()" />
@@ -37,9 +39,10 @@
               <p>7.9 <span class="icon-subtitle"><i class="material-icons">start_rate</i></span></p>
             </div>
             <p v-if="movie.overview.length > 177">{{ movie.overview.substring(0, 177) + '...' }}</p>
-            <p v-else>{{ movie.overview }}</p>
-            <p><span class="subtitle-overview">First aired: </span>{{ movie.first_air_date }}</p>
-            <p><span class="subtitle-overview">Genres: </span>{{ getGenres(movie) }}</p>
+            <p v-else-if="movie.overview.length > 0">{{ movie.overview }}</p>
+            <p v-else>No overview found.</p>
+            <p><span class="subtitle-overview">First aired: </span>{{ movie.first_air_date && movie.first_air_date.length > 0 ? movie.first_air_date : 'There is no first air date available' }}</p>
+            <p><span class="subtitle-overview">Genres: </span>{{ getGenres(movie).length > 0 ? getGenres(movie) : 'There are no genres available' }}</p>
             <router-link class="button" :to="{ name: 'seriesDetails', params: { id: movie.id }}">See more</router-link>
           </div>
         </div>
@@ -218,7 +221,7 @@ export default {
           `https://api.themoviedb.org/3/discover/tv?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US&sort_by=${this.selectedSorting}&page=${this.currentPage}&first_air_date.gte=${this.startDate}&first_air_date.lte=${this.endDate}&with_genres=${this.genreString}`
         )
         .then(response => {
-          this.movies = response.data.results
+          this.movies = response.data.results.filter(e => e !== null)
           this.total_results = response.data.total_results
           this.total_pages = response.data.total_pages
         })
@@ -255,6 +258,14 @@ export default {
 .filter {
   width: 20%;
   margin: 0;
+
+  .filter-title {
+    display: flex;
+
+    i {
+      margin: 2px 10px 0px 0px;
+    }
+  }
 }
 
 .content {
@@ -330,6 +341,12 @@ export default {
       display: flex;
       justify-content: space-between;
 
+      h3 {
+        font-size: 1.3em;
+        margin-bottom: 1.5em;
+        max-width: 77%;
+      }
+
       .icon-subtitle i {
         vertical-align: text-bottom;
         width: 20px;
@@ -363,6 +380,12 @@ export default {
   width: 100%;
   border: 0;
   border-bottom: 1px solid rgb(201, 201, 201);
+}
+
+@media screen and (max-width: 1280px) {
+  .filter .filter-title i {
+    margin: 0px 10px 0px 0px;
+  }
 }
 
 @media screen and (max-width: 736px) {

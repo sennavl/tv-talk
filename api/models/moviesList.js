@@ -10,7 +10,7 @@ const MoviesListSchema = mongoose.Schema({
   poster_path: { type: String, required: true }
 });
 
-MoviesListSchema.index({ user_id: 1, movie_id: 1 }, { unique: true });
+MoviesListSchema.index({ user_id: 1, movie_id: 1, list_id: 1 }, { unique: true });
 
 const MoviesList = mongoose.model('MoviesList', MoviesListSchema);
 module.exports = MoviesList;

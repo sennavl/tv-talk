@@ -3,17 +3,19 @@
     <div id="main">
       <div class="inner">
         <div class="panel-heading">
-          <h3>Profile</h3>
+          <h1>Profile</h1>
         </div>
         <div class="panel-body">
           <img :src="profile.picture" class="avatar" alt="avatar">
-          <div>
-          <label><i class="glyphicon glyphicon-user"></i> Nickname</label>
-          <h3 class="nickname">{{ profile.nickname }}</h3>
-          </div>
-          <div>
-          <label><i class="glyphicon glyphicon-envelope"></i> Email</label>
-          <h3 class="email">{{ profile.name }}</h3>
+          <div class="user-information">
+            <div>
+              <h2>Nickname</h2>
+              <p class="nickname">{{ profile.nickname }}</p>
+            </div>
+            <div>
+              <h2>Email</h2>
+              <p class="email">{{ profile.name }}</p>
+            </div>
           </div>
         </div>
 
@@ -67,12 +69,37 @@
 
         <section>
           <h2>Lists</h2>
-          <ul v-if="lists.length > 0">
-            <li v-for="list in lists" :key="list.id">
-              <router-link :to="{ name: 'List', params: { id: list._id }}">{{ list.name }}</router-link>
-            </li>
-          </ul>
+          <div class="table-wrapper">
+            <table>
+              <tbody>
+                <tr v-if="lists.length > 0" v-for="list in lists" :key="list.id">
+                  <td width="86%"><router-link :to="{ name: 'List', params: { id: list._id }}">{{ list.name }}</router-link></td>
+                  <td width="7%"><router-link :to="{ name: 'List', params: { id: list._id }}" style="color: green; border-bottom: none;">View</router-link></td>
+                  <td width="7%"><a style="color: red; border-bottom: none;" @click="askDeleteConfirmation(list._id)">Delete</a></td>
+                </tr>
+                <tr v-if="lists.length === 0">
+                  <td>You don't have any lists yet, go to a movie or tv serie you want to add to a list</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
+
+        <div id="myModal" class="modal" v-if="showDeleteConfirmationDialog">
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              <span class="close" @click="showDeleteConfirmationDialog = false">&times;</span>
+              <h2>Are you sure you want to delete this list?</h2>
+            </div>
+            <div class="modal-body">
+              <div class="options">
+                <a class="button special" @click="deleteList()">Yes</a>
+                <a class="button" @click="showDeleteConfirmationDialog = false">No</a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -101,7 +128,9 @@ export default {
       showAllFavoriteMovies: false,
       showAllFavoriteSeries: false,
       lists: [],
-      favoriteSeries: []
+      favoriteSeries: [],
+      showDeleteConfirmationDialog: false,
+      listIdToDelete: ''
     }
   },
   created () {
@@ -146,6 +175,27 @@ export default {
         .then((response) => {
           if (response.data.length > 0) {
             this.lists = response.data
+          } else {
+            this.lists = []
+          }
+        })
+    },
+    askDeleteConfirmation (listId) {
+      this.showDeleteConfirmationDialog = true
+      this.listIdToDelete = listId
+    },
+    deleteList () {
+      const listId = this.listIdToDelete
+      axios.delete(`http://localhost:3001/list/delete/${listId}`, {
+        headers: {
+          authorization: 'Bearer ' + localStorage.getItem('access_token')
+        }
+      })
+        .then((response) => {
+          if (response.status === 200) {
+            console.log('OK')
+            this.showDeleteConfirmationDialog = false
+            this.getLists()
           }
         })
     }
@@ -153,10 +203,27 @@ export default {
 }
 </script>
 
-<style>
-  .profile-area img {
-    max-width: 150px;
-    margin-bottom: 20px;
+<style lang="less" rel="stylesheet/less" type="text/less" scoped>
+  .panel-body {
+    display: flex;
+
+    div {
+      margin: 0;
+    }
+
+    img {
+      border-radius: 50%;
+      width: 160px;
+      margin: 0;
+      height: 160px;
+      margin-right: 20px;
+    }
+
+    .user-information {
+      h2 {
+        margin-bottom: 10px;
+      }
+    }
   }
 
   .panel-body h3 {
@@ -164,6 +231,55 @@ export default {
   }
 
   a:hover {
+    cursor: pointer;
+  }
+
+  .tiles h2 {
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+  }
+
+  .modal {
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+
+  .modal-header {
+    padding: 2px 16px;
+
+    h2 {
+      padding-top: 7px;
+    }
+  }
+
+  /* Modal Content/Box */
+  .modal-content {
+    background-color: #fefefe;
+    margin: 300px auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 500px; /* Could be more or less, depending on screen size */
+  }
+
+  /* The Close Button */
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
     cursor: pointer;
   }
 </style>

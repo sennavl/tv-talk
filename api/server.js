@@ -224,9 +224,11 @@ app.get('/favorite', checkJwt, (req, res) => {
 
 // get favorite for a certain user and serie (to check if user already favorited the serie)
 app.get('/favoriteTv', checkJwt, (req, res) => {
+	console.log('fjeifjeif')
 	FavoriteTv
 		.findOne({ user_id: req.user.sub.substring(6, req.user.sub.length), serie_id: req.query.serie_id })
 		.then((favorite) => {
+			console.log(favorite)
 			if (favorite) {
 				res.json(favorite);
 			} else {
@@ -241,6 +243,26 @@ app.delete('/favorite/delete/:movie_id', checkJwt, (req, res) => {
 	Favorite
 	  .deleteOne({ movie_id: req.params.movie_id, user_id: req.user.sub.substring(6, req.user.sub.length) })
 	  .then(() => res.status(200).end())
+	  .catch(err => res.status(500, err.message).end())
+});
+
+// remove list
+app.delete('/list/delete/:list_id', checkJwt, (req, res) => {
+	List
+		.deleteOne({ _id: req.params.list_id, user_id: req.user.sub.substring(6, req.user.sub.length) })
+		.then((response) => {
+			MoviesList
+				.deleteMany({ user_id: req.user.sub.substring(6, req.user.sub.length), list_id: req.params.list_id })
+				.then((response) => {
+					SeriesList
+						.deleteMany({ user_id: req.user.sub.substring(6, req.user.sub.length), list_id: req.params.list_id })
+						.then(() => {
+							res.status(200).end();
+						})
+						.catch(err => res.status(500, err.message).end())
+				})
+				.catch(err => res.status(500, err.message).end())
+	  })
 	  .catch(err => res.status(500, err.message).end())
 });
 

@@ -5,21 +5,31 @@
         <header>
           <h1>Events</h1>
         </header>
+
         <section>
           <h2>Upcoming events</h2>
-          <section class="tiles" v-if="events.length > 0">
-            <article >
-              <span class="image">
-                <img src="/static/assets/images/WorldCup.png" alt="" />
-              </span>
-              <router-link v-for="event of events" :key="event.id" :to="{ name: 'subEvents', params: { id: event._id }}">
-                <h2>{{ event.title }}</h2>
-                <div class="content">
-                  <p>{{ convertDate(event.start) + ' - ' + convertDate(event.end) }}</p>
-                </div>
-              </router-link>
-            </article>
-          </section>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Start date</th>
+                  <th>End date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-if="events.length > 0" v-for="event of events" :key="event.id">
+                  <td width="73%"><router-link :to="{ name: 'subEvents', params: { id: event._id }}">{{ event.title }}</router-link></td>
+                  <td width="10%">{{ convertDate(event.start) }}</td>
+                  <td width="10%">{{ convertDate(event.end) }}</td>
+                  <td width="7%"><router-link :to="{ name: 'subEvents', params: { id: event._id }}" style="color: green; border-bottom: none;">View</router-link></td>
+                </tr>
+                <tr v-if="events.length === 0">
+                  <td>There are no events</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
       </div>
     </div>

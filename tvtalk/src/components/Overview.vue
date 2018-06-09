@@ -4,14 +4,16 @@
     <h1>Overview - movies</h1>
     <div class="content">
       <div class="filter">
-        <h2>Filter</h2>
+        <div class="filter-title">
+          <i class="material-icons">filter_list</i><h2>Filter</h2>
+        </div>
         <p class="title">Release date</p>
         <p class="subtitle">From</p>
         <input type="date" class="date-input" v-model="startDate" placeholder="Name" @blur="startDateChanged()" />
         <p class="subtitle">To</p>
         <input type="date" class="date-input" v-model="endDate" placeholder="Name" @blur="endDateChanged()" />
         <p class="title">Genres</p>
-        <div v-for="genreLoop of genres" :key="genreLoop.id">
+        <div v-if="genres.length > 0" v-for="genreLoop of genres" :key="genreLoop.id">
           <input type="checkbox" v-model="genre" :id="'genre_' + genreLoop.id" :value="genreLoop.id"  />
           <label :for="'genre_' + genreLoop.id">{{ genreLoop.name }}</label>
         </div>
@@ -37,9 +39,10 @@
               <p>{{ ratings[index] }} <span class="icon-subtitle"><i class="material-icons">start_rate</i></span></p>
             </div>
             <p v-if="movie.overview.length > 177">{{ movie.overview.substring(0, 177) + '...' }}</p>
-            <p v-else>{{ movie.overview }}</p>
-            <p><span class="subtitle-overview">Release date: </span>{{ movie.release_date }}</p>
-            <p><span class="subtitle-overview">Genres: </span>{{ getGenres(movie) }}</p>
+            <p v-else-if="movie.overview.length > 0">{{ movie.overview }}</p>
+            <p v-else>No overview found.</p>
+            <p><span class="subtitle-overview">Release date: </span>{{ movie.release_date.length > 0 ? movie.release_date : 'There is no release date available' }}</p>
+            <p><span class="subtitle-overview">Genres: </span>{{ getGenres(movie).length > 0 ? getGenres(movie) : 'There are no genres available' }}</p>
             <router-link class="button" :to="{ name: 'movieDetails', params: { id: movie.id }}">See more</router-link>
           </div>
         </div>
@@ -219,7 +222,7 @@ export default {
           `https://api.themoviedb.org/3/discover/movie?api_key=09767dbf40d373b1e78aa80db4deefc9&language=en-US&sort_by=${this.selectedSorting}&page=${this.currentPage}&primary_release_date.gte=${this.startDate}&primary_release_date.lte=${this.endDate}&with_genres=${this.genreString}`
         )
         .then(response => {
-          this.movies = response.data.results
+          this.movies = response.data.results.filter(e => e !== null)
           this.total_results = response.data.total_results
           this.total_pages = response.data.total_pages
         })
@@ -267,6 +270,14 @@ export default {
 .filter {
   width: 20%;
   margin: 0;
+
+  .filter-title {
+    display: flex;
+
+    i {
+      margin: 2px 10px 0px 0px;
+    }
+  }
 }
 
 .content {
@@ -345,6 +356,7 @@ export default {
       h3 {
         font-size: 1.3em;
         margin-bottom: 1.5em;
+        max-width: 77%;
       }
 
       .icon-subtitle i {
@@ -380,6 +392,12 @@ export default {
   width: 100%;
   border: 0;
   border-bottom: 1px solid rgb(201, 201, 201);
+}
+
+@media screen and (max-width: 1280px) {
+  .filter .filter-title i {
+    margin: 0px 10px 0px 0px;
+  }
 }
 
 @media screen and (max-width: 736px) {
@@ -420,11 +438,6 @@ export default {
 @media screen and (max-width: 595px) {
   .movie-overview {
     display: block;
-
-    .poster {
-      display: none;
-    }
-
     .title-rating p {
       margin-right: 10px;
     }
