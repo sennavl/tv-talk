@@ -19,7 +19,7 @@
           </div>
         </div>
 
-        <section>
+        <section class="favoriteMovies">
           <h2>Favorite movies</h2>
           <section class="tiles" v-if="favoriteMovies && favoriteMovies.length > 0">
             <article v-for="(movie, index) of favoriteMovies" :key="movie.id" v-if="(!showAllFavoriteMovies && index < 3) || showAllFavoriteMovies">
@@ -34,8 +34,8 @@
               </router-link>
             </article>
             <article>
-              <p v-if="!showAllFavoriteMovies"><a @click="showAllFavoriteMovies = true">Show all</a></p>
-              <p v-if="showAllFavoriteMovies"><a @click="showAllFavoriteMovies = false">Show less</a></p>
+              <p v-if="!showAllFavoriteMovies && favoriteMovies.length > 3"><a @click="showAllFavoriteMovies = true">Show all</a></p>
+              <p v-if="showAllFavoriteMovies && favoriteMovies.length > 3"><a @click="showAllFavoriteMovies = false">Show less</a></p>
             </article>
           </section>
           <section v-else>
@@ -43,7 +43,7 @@
           </section>
         </section>
 
-        <section>
+        <section class="favoriteMovies">
           <h2>Favorite tv series</h2>
           <section class="tiles" v-if="favoriteSeries && favoriteSeries.length > 0">
             <article v-for="(movie, index) of favoriteSeries" :key="movie.id" v-if="(!showAllFavoriteSeries && index < 3) || showAllFavoriteSeries">
@@ -58,8 +58,8 @@
               </router-link>
             </article>
             <article>
-              <p v-if="!showAllFavoriteSeries"><a @click="showAllFavoriteSeries = true">Show all</a></p>
-              <p v-if="showAllFavoriteSeries"><a @click="showAllFavoriteSeries = false">Show less</a></p>
+              <p v-if="!showAllFavoriteSeries && favoriteSeries.length > 3"><a @click="showAllFavoriteSeries = true">Show all</a></p>
+              <p v-if="showAllFavoriteSeries && favoriteSeries.length > 3"><a @click="showAllFavoriteSeries = false">Show less</a></p>
             </article>
           </section>
           <section v-else>
@@ -204,6 +204,13 @@ export default {
 </script>
 
 <style lang="less" rel="stylesheet/less" type="text/less" scoped>
+  .favoriteMovies h2 {
+    margin-bottom: 0px
+  }
+  .tiles {
+    margin-top: 0px;
+    margin-bottom: 30px;
+  }
   .panel-body {
     display: flex;
 

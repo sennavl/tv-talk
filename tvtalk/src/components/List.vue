@@ -89,5 +89,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
-
+section h2 {
+  margin-bottom: 0px;
+}
+.tiles {
+  margin-top: 0px;
+  margin-bottom: 30px;
+}
 </style>

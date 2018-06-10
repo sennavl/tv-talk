@@ -15,7 +15,7 @@
           <div class="rating">
             <i class="material-icons">star_rate</i>
             <p v-if="!rated"><a @click="openRatingModal()">Add rating</a></p>
-            <p v-if="rated"><a @click="openEditRatingModal()">Edit rating</a></p>
+            <p v-if="rated">Already rated</p>
           </div>
         </div>
       </div>
@@ -320,6 +320,7 @@ export default {
         ).then((response) => {
           if (response.status === 200) {
             this.showModal = false
+            this.checkRating()
           }
         })
       } else {
