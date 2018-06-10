@@ -138,13 +138,11 @@ export default {
     selectedList: function (newList, oldList) {
       // addition
       if (newList.length > oldList.length && this.setSelectedList) {
-        console.log('toevoeging')
         // get list that was just checked
         const addedList = newList.slice(-1)
         // add movie to that list
         this.addMovieToList(addedList[0])
       } else if (oldList.length > newList.length && this.setSelectedList) { // deletion
-        console.log('verwijdering')
         const removedList = oldList.slice(-1)
         this.removeMovieFromList(removedList[0])
         // remove movie from list
@@ -273,9 +271,6 @@ export default {
         }
         this.login()
       }
-    },
-    openEditRatingModal () {
-      console.log('open edit')
     },
     test () {
       this.$router.go(-1)

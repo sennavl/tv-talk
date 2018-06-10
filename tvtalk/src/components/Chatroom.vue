@@ -112,7 +112,6 @@ export default {
     output.scrollTop = output.scrollHeight
   },
   beforeDestroy () {
-    console.log('close chat')
     socket.emit('unsubscribe', this.id)
     socket.disconnect()
   }

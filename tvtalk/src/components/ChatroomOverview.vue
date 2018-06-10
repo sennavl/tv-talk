@@ -62,10 +62,8 @@ export default {
     },
     getRoomCount (id) {
       if (this.rooms.length > 0 && typeof this.rooms[id] !== 'undefined') {
-        console.log(this.rooms)
         return this.rooms[id].length
       } else {
-        console.log(0)
         return 0
       }
     }

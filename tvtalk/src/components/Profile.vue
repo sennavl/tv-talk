@@ -193,7 +193,6 @@ export default {
       })
         .then((response) => {
           if (response.status === 200) {
-            console.log('OK')
             this.showDeleteConfirmationDialog = false
             this.getLists()
           }

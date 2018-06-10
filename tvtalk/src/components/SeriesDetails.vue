@@ -123,9 +123,7 @@ export default {
   },
   watch: {
     movie: function () {
-      console.log('detect change in movie')
       if (this.movie) {
-        console.log('movie is set', this.movie)
         this.checkRating()
         this.checkFavorite()
       }
@@ -215,7 +213,6 @@ export default {
         })
     },
     checkRating () {
-      console.log('checkrating')
       if (this.authenticated && typeof this.movie.id !== 'undefined') {
         axios.get(`http://localhost:3001/ratingTv?user_id=${this.auth.userProfile.sub.substring(6, this.auth.userProfile.sub.length)}&serie_id=${this.movie.id}`)
           .then((response) => {
@@ -262,9 +259,6 @@ export default {
         }
         this.login()
       }
-    },
-    openEditRatingModal () {
-      console.log('open edit')
     },
     test () {
       this.$router.go(-1)
