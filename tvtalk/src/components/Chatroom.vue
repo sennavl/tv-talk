@@ -6,15 +6,22 @@
           <h2>Chat</h2>
           <div id="chat-window">
             <div id="output">
-              <p v-if="messages.length < 1">There are no messages yet</p>
-              <p v-for="message in messages" :key="message.id">
-                {{`${formatTime(message.date)} ${message.name}: ${message.message}`}}
-              </p>
+              <div class="message" v-if="messages.length < 1">
+                <p>There are no messages yet</p>
+              </div>
+              <div class="message" v-else v-for="message in messages" :key="message.id">
+                <div class="timeAndUser">
+                  <p class="time">{{ formatTime(message.date) }}</p>
+                  <p class="username">{{ message.name }}</p>
+                </div>
+                <p>{{ message.message }}</p>
+              </div>
             </div>
           </div>
-          <input id="message" type="text" placeholder="Message" v-model="message" @keyup.enter="sendMessage" />
-          <button id="send" @click.prevent="sendMessage">Send</button>
-          <button>Test</button>
+          <div class="user-input">
+            <input id="message" type="text" placeholder="Message" v-model="message" @keyup.enter="sendMessage" />
+            <button id="send" @click.prevent="sendMessage">Send</button>
+          </div>
         </div>
       </div>
     </div>
@@ -26,7 +33,7 @@ import moment from 'moment'
 var socket
 
 export default {
-  props: ['auth', 'id'],
+  props: ['auth', 'id', 'subEventId'],
   data () {
     return {
       messages: [],
@@ -96,9 +103,44 @@ export default {
 }
 </script>
 
-<style>
+<style lang="less" scoped>
 #output {
   max-height: 300px;
   overflow-y: auto;
+  width: 70%;
+  margin: 0px 0px 25px 0px;
+  border: 1px solid rgb(201,201,201);
+
+  p {
+    margin: 0;
+  }
+
+  .message {
+    margin-bottom: 12px;
+    margin-left: 10px;
+
+    .timeAndUser {
+      display: flex;
+
+      .time {
+        font-style: italic;
+        margin-right: 10px;
+      }
+
+      .username {
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+.user-input {
+  display: flex;
+  width: 70%;
+  margin: 0;
+
+  button {
+    width: 120px;
+  }
 }
 </style>

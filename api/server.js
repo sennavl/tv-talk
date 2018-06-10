@@ -336,9 +336,12 @@ app.get('/subEvents/eventId/:id', (req, res) => {
 })
 
 // get all running subevents
+// add 30 minutes
+var now = new Date();
+now.setMinutes(now.getMinutes() + 30);
 app.get('/subEvents/running/:id', (req, res) => {
 	SubEvent
-		.find({ event_id: req.params.id, datetime_start: { '$lte': new Date() }, datetime_end: { '$gte': new Date() } })
+		.find({ event_id: req.params.id, datetime_start: { '$lte': now }, datetime_end: { '$gte': now } })
 		.then((subEvent) => {
 			res.json(subEvent);
 		})
@@ -347,8 +350,11 @@ app.get('/subEvents/running/:id', (req, res) => {
 
 // get all running subevents
 app.get('/subEvents/runningEvents', (req, res) => {
+	// add 30 minutes
+	var now = new Date();
+	now.setMinutes(now.getMinutes() + 30);
 	SubEvent
-		.find({ datetime_start: { '$lte': new Date() }, datetime_end: { '$gte': new Date() } })
+		.find({ datetime_start: { '$lte': now }, datetime_end: { '$gte': now } })
 		.then((subEvent) => {
 			res.json(subEvent);
 		})
@@ -357,8 +363,24 @@ app.get('/subEvents/runningEvents', (req, res) => {
 
 // get all upcoming subevents
 app.get('/subEvents/upcoming/:id', (req, res) => {
+	// add 30 minutes
+	var now = new Date();
+	now.setMinutes(now.getMinutes() + 30);
 	SubEvent
-		.find({ event_id: req.params.id, datetime_start: { '$gt': new Date() } })
+		.find({ event_id: req.params.id, datetime_start: { '$gt': now } })
+		.then((subEvent) => {
+			res.json(subEvent);
+		})
+		.catch(err => res.status(500, err.message).end());
+})
+
+// get all ended subevents
+app.get('/subEvents/ended', (req, res) => {
+	// add 30 minutes
+	var now = new Date();
+	now.setMinutes(now.getMinutes() + 30);
+	SubEvent
+		.find({ datetime_end: { '$gt': now } })
 		.then((subEvent) => {
 			res.json(subEvent);
 		})
@@ -372,6 +394,20 @@ app.get('/chatrooms/:id', (req, res) => {
 			res.json(chatrooms);
 		})
 		.catch(err => res.status(500, err.message).end());
+})
+
+// add rating for movie
+app.post('/chatroom/add', (req, res) => {
+	let newChatroom = new Chatroom(req.body);
+	newChatroom
+		.save()
+		.then((chatroom) => {
+			res.json(chatroom);
+		})
+		.catch(err => {
+			console.log(err.message)
+			res.status(500, err.message).end();
+		})
 })
 
 // add rating for movie

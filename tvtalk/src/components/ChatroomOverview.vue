@@ -15,7 +15,7 @@
               </thead>
               <tbody>
                 <tr v-if="chatrooms.length > 0" v-for="chatroom in chatrooms" :key="chatroom.id">
-                  <td width="73%"><router-link :to="{ name: 'Chatroom', params: { id: chatroom._id } }" :class="typeof rooms[chatroom._id] !== 'undefined' && rooms[chatroom._id].length > 2 ? 'not-active': ''">{{ chatroom.name }}</router-link></td>
+                  <td width="73%"><router-link :to="{ name: 'Chatroom', params: { id: chatroom._id, subEventId: id } }" :class="typeof rooms[chatroom._id] !== 'undefined' && rooms[chatroom._id].length > 2 ? 'not-active': ''">{{ chatroom.name }}</router-link></td>
                   <td width="27%">{{ typeof rooms[chatroom._id] !== 'undefined' ? rooms[chatroom._id].length : 0 }}</td>
                 </tr>
                 <tr v-if="chatrooms.length === 0">

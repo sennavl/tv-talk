@@ -65,7 +65,7 @@
     <!-- Footer -->
     <footer id="footer">
       <div class="inner">
-        <section>
+        <section style="margin-top: 0;">
           <h2>Get in touch</h2>
           <form method="post" action="#">
             <div class="field half first">
