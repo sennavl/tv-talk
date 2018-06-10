@@ -4,6 +4,7 @@
       <div id="main">
         <div class="inner">
           <h2>Chat</h2>
+          <p>This chatroom will close at {{ convertDate(subEvent.datetime_end) }}</p>
           <div id="chat-window">
             <div id="output">
               <div class="message" v-if="messages.length < 1">
@@ -29,6 +30,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+import axios from 'axios'
 import moment from 'moment'
 var socket
 
@@ -38,7 +40,8 @@ export default {
     return {
       messages: [],
       message: '',
-      profile: {}
+      profile: {},
+      subEvent: {}
     }
   },
   created () {
@@ -57,6 +60,7 @@ export default {
       }
     })
     this.getProfile()
+    this.getSubEvent()
   },
   methods: {
     formatTime (date) {
@@ -89,6 +93,18 @@ export default {
       return {
         profile: {}
       }
+    },
+    getSubEvent () {
+      axios.get(`http://localhost:3001/singleSubEvent/${this.subEventId}`)
+        .then((response) => {
+          this.subEvent = response.data
+        })
+    },
+    convertDate (date) {
+      var tempDate = new Date(date)
+      tempDate.setMinutes(tempDate.getMinutes() + 30)
+      tempDate = moment(tempDate)
+      return tempDate.format('DD-MM-YYYY / HH:mm')
     }
   },
   updated () {

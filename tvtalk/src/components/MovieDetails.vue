@@ -580,4 +580,18 @@ h1 {
     display: block;
   }
 }
+
+@media screen and (max-width: 460px) {
+  .title-rating {
+    display: block;
+  }
+
+  .subtitles {
+    display: block;
+
+    p {
+      margin-bottom: 10px;
+    }
+  }
+}
 </style>

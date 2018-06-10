@@ -361,8 +361,10 @@ app.get('/subEvents/runningEvents', (req, res) => {
 	// add 30 minutes
 	var now = new Date();
 	now.setMinutes(now.getMinutes() + 30);
+	var nowMinus = new Date();
+	nowMinus.setMinutes(nowMinus.getMinutes() - 30);
 	SubEvent
-		.find({ datetime_start: { '$lte': now }, datetime_end: { '$gte': now } })
+		.find({ datetime_start: { '$lte': now }, datetime_end: { '$gte': nowMinus } })
 		.then((subEvent) => {
 			res.json(subEvent);
 		})
@@ -393,6 +395,15 @@ app.get('/subEvents/ended', (req, res) => {
 		.find({ datetime_end: { '$lt': now, '$gt': minusHour } })
 		.then((subEvent) => {
 			res.json(subEvent);
+		})
+		.catch(err => res.status(500, err.message).end());
+})
+
+app.get('/singleSubEvent/:id', (req, res) => {
+	SubEvent
+		.findOne({ _id: req.params.id })
+		.then((subevent) => {
+			res.json(subevent);
 		})
 		.catch(err => res.status(500, err.message).end());
 })
