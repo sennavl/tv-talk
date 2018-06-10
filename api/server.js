@@ -224,11 +224,9 @@ app.get('/favorite', checkJwt, (req, res) => {
 
 // get favorite for a certain user and serie (to check if user already favorited the serie)
 app.get('/favoriteTv', checkJwt, (req, res) => {
-	console.log('fjeifjeif')
 	FavoriteTv
 		.findOne({ user_id: req.user.sub.substring(6, req.user.sub.length), serie_id: req.query.serie_id })
 		.then((favorite) => {
-			console.log(favorite)
 			if (favorite) {
 				res.json(favorite);
 			} else {
@@ -336,12 +334,14 @@ app.get('/subEvents/eventId/:id', (req, res) => {
 })
 
 // get all running subevents
-// add 30 minutes
-var now = new Date();
-now.setMinutes(now.getMinutes() + 30);
 app.get('/subEvents/running/:id', (req, res) => {
+	// add 30 minutes
+	var now = new Date();
+	now.setMinutes(now.getMinutes() + 30);
+	var nowMinus = new Date();
+	nowMinus.setMinutes(nowMinus.getMinutes() - 30);
 	SubEvent
-		.find({ event_id: req.params.id, datetime_start: { '$lte': now }, datetime_end: { '$gte': now } })
+		.find({ event_id: req.params.id, datetime_start: { '$lte': now }, datetime_end: { '$gte': nowMinus } })
 		.then((subEvent) => {
 			res.json(subEvent);
 		})
@@ -378,9 +378,11 @@ app.get('/subEvents/upcoming/:id', (req, res) => {
 app.get('/subEvents/ended', (req, res) => {
 	// add 30 minutes
 	var now = new Date();
-	now.setMinutes(now.getMinutes() + 30);
+	now.setMinutes(now.getMinutes() - 30);
+	var minusHour = new Date();
+	minusHour.setHours(minusHour.getHours() - 1)
 	SubEvent
-		.find({ datetime_end: { '$gt': now } })
+		.find({ datetime_end: { '$lt': now, '$gt': minusHour } })
 		.then((subEvent) => {
 			res.json(subEvent);
 		})

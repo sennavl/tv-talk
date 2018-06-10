@@ -43,10 +43,21 @@ agenda.define('checkEventsOpen', function(job, done) {
 	done()
 });
 
+agenda.define('checkEventsClose', function(job, done) {
+	console.log('checkeventsClose', new Date())
+	axios.get('http://localhost:3001/subEvents/ended')
+		.then((response) => {
+			console.log(response.data.length)
+		})
+		.catch(err => console.log(err))
+	done();
+})
+
 agenda.on('ready', function() {
 	console.log('ready')
 	// agenda.now('checkEventsOpen')
 	agenda.every('*/5 * * * * *', 'checkEventsOpen');
+	agenda.every('*/5 * * * * *', 'checkEventsClose');
 
 	agenda.start();
 });
