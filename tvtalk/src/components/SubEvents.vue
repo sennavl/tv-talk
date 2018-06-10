@@ -7,24 +7,49 @@
         </header>
 
         <section>
-          <h2>Sub events</h2>
+          <h2>Events in progress</h2>
           <div class="table-wrapper">
             <table>
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Start date</th>
-                  <th>End date</th>
+                  <th v-if="runningSubEvents.length > 0">Name</th>
+                  <th v-if="runningSubEvents.length > 0">Start date</th>
+                  <th v-if="runningSubEvents.length > 0">End date</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-if="subEvents.length > 0" v-for="event of subEvents" :key="event.id">
+                <tr v-if="runningSubEvents.length > 0" v-for="event of runningSubEvents" :key="event.id">
                   <td width="63%"><router-link :to="{ name: 'ChatroomOverview', params: { id: event._id }}">{{ event.title }}</router-link></td>
                   <td width="15%">{{ convertDate(event.datetime_start) }}</td>
                   <td width="15%">{{ convertDate(event.datetime_end) }}</td>
                   <td width="7%"><router-link :to="{ name: 'ChatroomOverview', params: { id: event._id }}" style="color: green; border-bottom: none;">View</router-link></td>
                 </tr>
-                <tr v-if="subEvents.length === 0">
+                <tr v-if="runningSubEvents.length === 0">
+                  <td>There are no events currently in progress</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2>Upcoming events</h2>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th v-if="upcomingSubEvents.length > 0">Name</th>
+                  <th v-if="upcomingSubEvents.length > 0">Start date</th>
+                  <th v-if="upcomingSubEvents.length > 0">End date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-if="upcomingSubEvents.length > 0" v-for="event of upcomingSubEvents" :key="event.id">
+                  <td width="63%">{{ event.title }}</td>
+                  <td width="15%">{{ convertDate(event.datetime_start) }}</td>
+                  <td width="15%">{{ convertDate(event.datetime_end) }}</td>
+                </tr>
+                <tr v-if="upcomingSubEvents.length === 0">
                   <td>There are no upcoming events</td>
                 </tr>
               </tbody>
@@ -45,13 +70,15 @@ export default {
   data () {
     return {
       eventTitle: '',
-      subEvents: [],
+      upcomingSubEvents: [],
+      runningSubEvents: [],
       errors: []
     }
   },
   created () {
     this.getEvent()
-    this.getEvents()
+    this.getUpcomingEvents()
+    this.getRunningEvents()
   },
   methods: {
     getEvent () {
@@ -63,10 +90,19 @@ export default {
           this.errors.push(e)
         })
     },
-    getEvents () {
-      axios.get(`http://localhost:3001/subEvents/${this.id}`)
+    getUpcomingEvents () {
+      axios.get(`http://localhost:3001/subEvents/upcoming/${this.id}`)
         .then((response) => {
-          this.subEvents = response.data
+          this.upcomingSubEvents = response.data
+        })
+        .catch(e => {
+          this.errors.push(e)
+        })
+    },
+    getRunningEvents () {
+      axios.get(`http://localhost:3001/subEvents/running/${this.id}`)
+        .then((response) => {
+          this.runningSubEvents = response.data
         })
         .catch(e => {
           this.errors.push(e)

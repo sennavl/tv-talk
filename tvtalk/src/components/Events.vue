@@ -45,10 +45,9 @@
               </thead>
               <tbody>
                 <tr v-if="upcomingEvents.length > 0" v-for="event of upcomingEvents" :key="event.id">
-                  <td class="nameEvent"><router-link :to="{ name: 'subEvents', params: { id: event._id }}">{{ event.title }}</router-link></td>
+                  <td class="nameEvent">{{ event.title }}</td>
                   <td class="startDateEvent">{{ convertDate(event.start) }}</td>
                   <td class="endDateEvent">{{ convertDate(event.end) }}</td>
-                  <td class="viewEvent"><router-link :to="{ name: 'subEvents', params: { id: event._id }}" style="color: green; border-bottom: none;">View</router-link></td>
                 </tr>
                 <tr v-if="upcomingEvents.length === 0">
                   <td>There are no upcoming events</td>

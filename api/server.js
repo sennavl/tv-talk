@@ -325,9 +325,40 @@ app.get('/event/:id', (req, res) => {
 		.catch(e => res.status(500, err.message).end());
 })
 
-app.get('/subEvents/:id', (req, res) => {
+// get all subevents
+app.get('/subEvents/eventId/:id', (req, res) => {
 	SubEvent
 		.find({ event_id: req.params.id })
+		.then((subEvent) => {
+			res.json(subEvent);
+		})
+		.catch(err => res.status(500, err.message).end());
+})
+
+// get all running subevents
+app.get('/subEvents/running/:id', (req, res) => {
+	SubEvent
+		.find({ event_id: req.params.id, datetime_start: { '$lte': new Date() }, datetime_end: { '$gte': new Date() } })
+		.then((subEvent) => {
+			res.json(subEvent);
+		})
+		.catch(err => res.status(500, err.message).end());
+})
+
+// get all running subevents
+app.get('/subEvents/runningEvents', (req, res) => {
+	SubEvent
+		.find({ datetime_start: { '$lte': new Date() }, datetime_end: { '$gte': new Date() } })
+		.then((subEvent) => {
+			res.json(subEvent);
+		})
+		.catch(err => res.status(500, err.message).end());
+})
+
+// get all upcoming subevents
+app.get('/subEvents/upcoming/:id', (req, res) => {
+	SubEvent
+		.find({ event_id: req.params.id, datetime_start: { '$gt': new Date() } })
 		.then((subEvent) => {
 			res.json(subEvent);
 		})
