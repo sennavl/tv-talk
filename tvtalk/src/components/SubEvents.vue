@@ -19,10 +19,10 @@
               </thead>
               <tbody>
                 <tr v-if="runningSubEvents.length > 0" v-for="event of runningSubEvents" :key="event.id">
-                  <td width="63%"><router-link :to="{ name: 'ChatroomOverview', params: { id: event._id }}">{{ event.title }}</router-link></td>
-                  <td width="15%">{{ convertDate(event.datetime_start) }}</td>
-                  <td width="15%">{{ convertDate(event.datetime_end) }}</td>
-                  <td width="7%"><router-link :to="{ name: 'ChatroomOverview', params: { id: event._id }}" style="color: green; border-bottom: none;">View</router-link></td>
+                  <td class="nameEvent"><router-link :to="{ name: 'ChatroomOverview', params: { id: event._id }}">{{ event.title }}</router-link></td>
+                  <td class="startDateEvent">{{ convertDate(event.datetime_start) }}</td>
+                  <td class="endDateEvent">{{ convertDate(event.datetime_end) }}</td>
+                  <td class="viewEvent"><router-link :to="{ name: 'ChatroomOverview', params: { id: event._id }}" style="color: green; border-bottom: none;">View</router-link></td>
                 </tr>
                 <tr v-if="runningSubEvents.length === 0">
                   <td>There are no events currently in progress</td>
@@ -45,9 +45,9 @@
               </thead>
               <tbody>
                 <tr v-if="upcomingSubEvents.length > 0" v-for="event of upcomingSubEvents" :key="event.id">
-                  <td width="63%">{{ event.title }}</td>
-                  <td width="15%">{{ convertDate(event.datetime_start) }}</td>
-                  <td width="15%">{{ convertDate(event.datetime_end) }}</td>
+                  <td class="nameEvent">{{ event.title }}</td>
+                  <td class="startDateEvent">{{ convertDate(event.datetime_start) }}</td>
+                  <td class="endDateEvent">{{ convertDate(event.datetime_end) }}</td>
                 </tr>
                 <tr v-if="upcomingSubEvents.length === 0">
                   <td>There are no upcoming events</td>
@@ -120,5 +120,123 @@ export default {
 .tiles h2 {
   -webkit-text-stroke-width: 1px;
   -webkit-text-stroke-color: black;
+}
+
+.table-wrapper {
+  .nameEvent {
+    width: 63%;
+  }
+
+  .startDateEvent {
+    width: 15%;
+  }
+
+  .endDateEvent {
+    width: 15%;
+  }
+
+  .viewEvent {
+    width: 7%;
+  }
+}
+
+@media screen and (max-width: 966px) {
+  .table-wrapper {
+    .nameEvent {
+      width: 59%;
+    }
+
+    .startDateEvent {
+      width: 17%;
+    }
+
+    .endDateEvent {
+      width: 17%;
+    }
+
+    .viewEvent {
+      width: 7%;
+    }
+  }
+}
+
+@media screen and (max-width: 809px) {
+  .table-wrapper {
+    .nameEvent {
+      width: 53%;
+    }
+
+    .startDateEvent {
+      width: 20%;
+    }
+
+    .endDateEvent {
+      width: 20%;
+    }
+
+    .viewEvent {
+      width: 7%;
+    }
+  }
+}
+
+@media screen and (max-width: 694px) {
+  .table-wrapper {
+    .nameEvent {
+      width: 43%;
+    }
+
+    .startDateEvent {
+      width: 25%;
+    }
+
+    .endDateEvent {
+      width: 25%;
+    }
+
+    .viewEvent {
+      width: 7%;
+    }
+  }
+}
+
+@media screen and (max-width: 548px) {
+  .table-wrapper {
+    .nameEvent {
+      width: 43%;
+    }
+
+    .startDateEvent {
+      width: 25%;
+    }
+
+    .endDateEvent {
+      width: 25%;
+    }
+
+    .viewEvent {
+      width: 7%;
+    }
+  }
+}
+
+@media screen and (max-width: 461px) {
+  .table-wrapper {
+    .nameEvent {
+      width: 33%;
+    }
+
+    .startDateEvent {
+      width: 30%;
+    }
+
+    .endDateEvent {
+      width: 30%;
+    }
+
+    .viewEvent {
+      width: 7%;
+    }
+  }
 }
 </style>

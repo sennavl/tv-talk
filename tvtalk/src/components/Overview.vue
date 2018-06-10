@@ -4,19 +4,22 @@
     <h1>Overview - movies</h1>
     <div class="content">
       <div class="filter">
-        <div class="filter-title">
-          <i class="material-icons">filter_list</i><h2>Filter</h2>
+        <div class="filter-title" @click="toggleFilter()">
+          <i class="material-icons">filter_list</i><h2>Filter</h2><i class="material-icons arrow" v-if="!open">keyboard_arrow_down</i><i class="material-icons arrow" v-if="open">keyboard_arrow_up</i>
         </div>
-        <p class="title">Release date</p>
-        <p class="subtitle">From</p>
-        <input type="date" class="date-input" v-model="startDate" placeholder="Name" @blur="startDateChanged()" />
-        <p class="subtitle">To</p>
-        <input type="date" class="date-input" v-model="endDate" placeholder="Name" @blur="endDateChanged()" />
-        <p class="title">Genres</p>
-        <div v-if="genres.length > 0" v-for="genreLoop of genres" :key="genreLoop.id">
-          <input type="checkbox" v-model="genre" :id="'genre_' + genreLoop.id" :value="genreLoop.id"  />
-          <label :for="'genre_' + genreLoop.id">{{ genreLoop.name }}</label>
+        <div class="filter-content">
+          <p class="title">Release date</p>
+          <p class="subtitle">From</p>
+          <input type="date" class="date-input" v-model="startDate" placeholder="Name" @blur="startDateChanged()" />
+          <p class="subtitle">To</p>
+          <input type="date" class="date-input" v-model="endDate" placeholder="Name" @blur="endDateChanged()" />
+          <p class="title">Genres</p>
+          <div v-if="genres.length > 0" v-for="genreLoop of genres" :key="genreLoop.id">
+            <input type="checkbox" v-model="genre" :id="'genre_' + genreLoop.id" :value="genreLoop.id"  />
+            <label :for="'genre_' + genreLoop.id">{{ genreLoop.name }}</label>
+          </div>
         </div>
+
       </div>
       <div class="movies-overview">
         <div class="movie-list-header">
@@ -88,7 +91,8 @@ export default {
       startDate: '',
       endDate: '',
       selectedSorting: 'popularity.desc',
-      ratings: []
+      ratings: [],
+      open: false
     }
   },
   computed: {
@@ -252,6 +256,19 @@ export default {
             this.ratings.push(response.data)
           })
       })
+    },
+    toggleFilter () {
+      const element = this.$el.querySelector('.filter-content')
+      const style = window.getComputedStyle(element)
+      const display = style.getPropertyValue('display')
+
+      if (display === 'block') {
+        this.$el.querySelector('.filter-content').style.display = 'none'
+        this.open = false
+      } else if (display === 'none') {
+        this.$el.querySelector('.filter-content').style.display = 'block'
+        this.open = true
+      }
     }
   }
 }
@@ -263,6 +280,10 @@ export default {
   margin: 0;
 }
 
+h2 {
+  font-size: 1.1em;
+}
+
 .filter p.subtitle {
   margin: 0;
 }
@@ -271,11 +292,19 @@ export default {
   width: 20%;
   margin: 0;
 
+  .filter-content {
+    display: block;
+  }
+
   .filter-title {
     display: flex;
 
     i {
       margin: 2px 10px 0px 0px;
+    }
+
+    .arrow {
+      display: none;
     }
   }
 }
@@ -407,6 +436,22 @@ export default {
 
     .filter {
       width: 100%;
+
+      .filter-title {
+        border: 1px solid rgb(201,201,201);
+        border-radius: 5px;
+        height: 2em;
+        cursor: pointer;
+
+        .arrow {
+          display: block;
+          margin-left: auto;
+        }
+      }
+
+      .filter-content {
+        display: none;
+      }
     }
 
     .movies-overview {

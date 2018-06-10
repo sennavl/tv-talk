@@ -29,20 +29,22 @@
         </div>
         <div class="info">
           <p class="subtitle">Overview</p>
-          <p>{{ movie.overview }}</p>
+          <p>{{ movie.overview || 'No overview available' }}</p>
           <p class="subtitle">Spoken languages</p>
           <p v-if="movie.spoken_languages.length > 0" v-for="language of movie.spoken_languages" :key="language.id">{{ language.name }}</p>
           <p v-else>Not available</p>
-          <p class="subtitle">Budget</p>
-          <p>{{ movie.budget | currency }}</p>
-          <p class="subtitle">Homepage</p>
-          <p><a :href="movie.homepage">{{ movie.homepage }}</a></p>
-          <p class="subtitle">Status</p>
-          <p>{{ movie.status }}</p>
           <p class="subtitle">Release date</p>
-          <p>{{ movie.release_date }}</p>
+          <p>{{ movie.release_date || 'No release date available' }}</p>
+          <p class="subtitle">Status</p>
+          <p>{{ movie.status || 'No status available' }}</p>
+          <p class="subtitle">Homepage</p>
+          <p><a :href="movie.homepage">{{ movie.homepage || 'No homepage available' }}</a></p>
+          <p class="subtitle">Budget</p>
+          <p v-if="movie.budget">{{ movie.budget | currency }}</p>
+          <p v-else>No budget available</p>
           <p class="subtitle">Revenue</p>
-          <p>{{ movie.revenue }}</p>
+          <p v-if="movie.revenue">{{ movie.revenue | currency }}</p>
+          <p v-else>No revenue available</p>
         </div>
       </div>
     </div>
@@ -355,6 +357,7 @@ export default {
         .then((response) => {
           if (response.status === 200) {
             this.getLists()
+            this.listTitle = ''
           }
         })
     },
@@ -543,7 +546,7 @@ h1 {
   margin: 300px auto; /* 15% from the top and centered */
   padding: 20px;
   border: 1px solid #888;
-  width: 300px; /* Could be more or less, depending on screen size */
+  width: 350px; /* Could be more or less, depending on screen size */
 }
 
 /* The Close Button */

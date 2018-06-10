@@ -16,7 +16,7 @@
               <router-link :to="{ name: 'movieDetails', params: { id: movie.id }}">
                 <h2>{{movie.title}}</h2>
                 <div class="content">
-                  <p>{{movie.overview.substring(0, 75) + "..."}}</p>
+                  <p>Click to see more</p>
                 </div>
               </router-link>
             </article>
@@ -33,7 +33,7 @@
               <router-link :to="{ name: 'seriesDetails', params: { id: serie.id }}">
                 <h2>{{serie.name}}</h2>
                 <div class="content">
-                  <p>{{serie.overview.substring(0, 75) + "..."}}</p>
+                  <p>Click to see more</p>
                 </div>
               </router-link>
             </article>

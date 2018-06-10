@@ -29,15 +29,15 @@
         </div>
         <div class="info">
           <p class="subtitle">Overview</p>
-          <p>{{ movie.overview }}</p>
+          <p>{{ movie.overview || 'No overview available' }}</p>
           <p class="subtitle">Homepage</p>
-          <p><a :href="movie.homepage">{{ movie.homepage }}</a></p>
+          <p><a :href="movie.homepage">{{ movie.homepage || 'No homepage available' }}</a></p>
           <p class="subtitle">Status</p>
-          <p>{{ movie.status }}</p>
+          <p>{{ movie.status || 'No status available' }}</p>
           <p class="subtitle">First air date</p>
-          <p>{{ movie.first_air_date }}</p>
+          <p>{{ movie.first_air_date || 'No first air date available' }}</p>
           <p class="subtitle">Last air date</p>
-          <p>{{ movie.last_air_date }}</p>
+          <p>{{ movie.last_air_date || 'No last air date available' }}</p>
         </div>
       </div>
     </div>
@@ -355,6 +355,7 @@ export default {
         .then((response) => {
           if (response.status === 200) {
             this.getLists()
+            this.listTitle = ''
           }
         })
     },
@@ -537,7 +538,7 @@ h1 {
   margin: 300px auto; /* 15% from the top and centered */
   padding: 20px;
   border: 1px solid #888;
-  width: 300px; /* Could be more or less, depending on screen size */
+  width: 350px; /* Could be more or less, depending on screen size */
 }
 
 /* The Close Button */
