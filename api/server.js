@@ -200,6 +200,14 @@ app.delete('/list/delete/movie/:movie_id', checkJwt, (req, res) => {
 	  .catch(err => res.status(500, err.message).end())
 });
 
+// remove chatrooms
+app.delete('/chatroom/delete/:chatroom_id', (req, res) => {
+	Chatroom
+	  .deleteOne({ _id: req.params.chatroom_id })
+	  .then(() => res.status(200).end())
+	  .catch(err => res.status(500, err.message).end())
+});
+
 // remove serie from list
 app.delete('/list/delete/serie/:serie_id', checkJwt, (req, res) => {
 	SeriesList

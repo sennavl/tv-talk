@@ -47,7 +47,29 @@ agenda.define('checkEventsClose', function(job, done) {
 	console.log('checkeventsClose', new Date())
 	axios.get('http://localhost:3001/subEvents/ended')
 		.then((response) => {
-			console.log(response.data.length)
+			if (response.data.length > 0) {
+				// There are events that just ended
+				response.data.forEach(element => {
+					axios.get(`http://localhost:3001/chatrooms/${element._id}`)
+						.then((response) => {
+							if (response.data.length > 0) {
+								// There are chatrooms of the running subevents so it's not needed to create a chatroom
+								console.log('There are chatrooms for the ended event', response.data)
+								response.data.forEach(element => {
+									axios.delete(`http://localhost:3001/chatroom/delete/${element._id}`)
+										.then(() => {
+											console.log('Deleted chatroom')
+										})
+										.catch(err => console.log(err))
+								});
+							} else {
+								// There are no chatrooms
+								console.log('There are no chatrooms for the ended event')
+							}
+						})
+						.catch(err => console.log(err))
+				});
+			}
 		})
 		.catch(err => console.log(err))
 	done();
