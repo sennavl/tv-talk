@@ -4,7 +4,7 @@
       <div class="inner">
         <h1>List</h1>
         <section v-if="movies.length > 0">
-          <h2>Movies</h2>
+          <h2>Movies (Total runtime: {{ getRunTime() }})</h2>
           <section class="tiles" v-if="movies && movies.length">
             <article v-for="movie of movies" :key="movie.id">
               <span class="image">
@@ -83,6 +83,18 @@ export default {
             this.series = response.data
           }
         })
+    },
+    getRunTime () {
+      var minutes = this.movies.map(e => e.runtime)
+      var sum = minutes.reduce(function (a, b) { return a + b }, 0)
+      return this.convertMinsToHrsMins(sum)
+    },
+    convertMinsToHrsMins (mins) {
+      let h = Math.floor(mins / 60)
+      let m = mins % 60
+      h = h < 10 ? '0' + h : h
+      m = m < 10 ? '0' + m : m
+      return `${h}:${m}`
     }
   }
 }
