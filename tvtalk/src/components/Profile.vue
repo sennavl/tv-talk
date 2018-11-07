@@ -206,6 +206,11 @@ export default {
   .favoriteMovies h2 {
     margin-bottom: 0px
   }
+
+  article p {
+    margin-bottom: 0px;
+  }
+
   .tiles {
     margin-top: 0px;
     margin-bottom: 30px;

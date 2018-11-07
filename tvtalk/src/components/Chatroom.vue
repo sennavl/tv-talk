@@ -4,7 +4,6 @@
       <div id="main">
         <div class="inner">
           <h2>Chat</h2>
-          <p>This chatroom will close at {{ convertDate(subEvent.datetime_end) }}</p>
           <div id="chat-window">
             <div id="output">
               <div class="message" v-if="messages.length < 1">
@@ -46,14 +45,18 @@ export default {
   },
   created () {
     const io = require('socket.io-client')
+    // connect to the server and send the chatroom id
     socket = io.connect('http://localhost:4113', { query: `chatroom_id=${this.id}` })
     socket.emit('subscribe', this.id)
 
+    // every time a message is sent it's added to the array of messages
     socket.on('output', (data) => {
       if (typeof data !== 'undefined') {
         this.messages.push(data)
       }
     })
+
+    // the server send back the chat messages that already exist in the chatroom
     socket.on('initialOutput', (data) => {
       if (data.length) {
         this.messages = data

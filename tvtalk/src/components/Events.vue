@@ -12,9 +12,9 @@
             <table>
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Start date</th>
-                  <th>End date</th>
+                  <th v-if="runningEvents.length > 0">Name</th>
+                  <th v-if="runningEvents.length > 0">Start date</th>
+                  <th v-if="runningEvents.length > 0">End date</th>
                 </tr>
               </thead>
               <tbody>
@@ -25,7 +25,7 @@
                   <td class="viewEvent"><router-link :to="{ name: 'subEvents', params: { id: event._id }}" style="color: green; border-bottom: none;">View</router-link></td>
                 </tr>
                 <tr v-if="runningEvents.length === 0">
-                  <td>There are no upcoming events</td>
+                  <td>There are no events in progress</td>
                 </tr>
               </tbody>
             </table>
@@ -38,9 +38,9 @@
             <table>
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Start date</th>
-                  <th>End date</th>
+                  <th v-if="upcomingEvents.length > 0">Name</th>
+                  <th v-if="upcomingEvents.length > 0">Start date</th>
+                  <th v-if="upcomingEvents.length > 0">End date</th>
                 </tr>
               </thead>
               <tbody>

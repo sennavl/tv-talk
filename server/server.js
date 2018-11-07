@@ -1,12 +1,13 @@
 const mongo = require('mongodb').MongoClient;
 var client = require('socket.io').listen(4113);
+require('dotenv').config();
 
 client.sockets.on('connection', (socket) => {
 	client.sockets.emit('rooms', client.sockets.adapter.rooms)
 })
 
 // Connect to Mongo
-mongo.connect('mongodb://localhost', (err, dbClient) => {
+mongo.connect(`mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@ds153763.mlab.com:53763/tvtalk`, (err, dbClient) => {
 	const db = dbClient.db('tvtalk');
 	if(err) {
 		throw err;
@@ -49,7 +50,7 @@ mongo.connect('mongodb://localhost', (err, dbClient) => {
 				sendStatus('Please enter a message and login');
 			} else {
 				chat.insert({name: name, message: message, date: data.date, chatroom_id: data.chatroom_id}, function() {
-					client.sockets.emit('output', data);
+					client.sockets.to(socket.handshake.query.chatroom_id).emit('output', data);
 					sendStatus({
 						message: 'message sent',
 						clear: true

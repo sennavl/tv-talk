@@ -234,11 +234,11 @@ li > a {
 }
 
 .search-bar i {
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 .livesearch {
-    margin-left: 35px;
+  margin-left: 35px;
 }
 
 .livesearch .media-type {

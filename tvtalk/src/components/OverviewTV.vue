@@ -8,15 +8,19 @@
           <i class="material-icons">filter_list</i><h2>Filter</h2><i class="material-icons arrow" v-if="!open">keyboard_arrow_down</i><i class="material-icons arrow" v-if="open">keyboard_arrow_up</i>
         </div>
         <div class="filter-content">
-          <p class="title">Release date</p>
-          <p class="subtitle">From</p>
-          <input type="date" class="date-input" v-model="startDate" placeholder="Name" @blur="startDateChanged()" />
-          <p class="subtitle">To</p>
-          <input type="date" class="date-input" v-model="endDate" placeholder="Name" @blur="endDateChanged()" />
-          <p class="title">Genres</p>
-          <div v-for="genreLoop of genres" :key="genreLoop.id">
-            <input type="checkbox" v-model="genre" :id="'genre_' + genreLoop.id" :value="genreLoop.id"  />
-            <label :for="'genre_' + genreLoop.id">{{ genreLoop.name }}</label>
+          <div class="release-date">
+            <p class="title">Release date</p>
+            <p class="subtitle">From</p>
+            <input type="date" class="date-input" v-model="startDate" placeholder="Name" @blur="startDateChanged()" />
+            <p class="subtitle">To</p>
+            <input type="date" class="date-input" v-model="endDate" placeholder="Name" @blur="endDateChanged()" />
+          </div>
+          <div class="genres-filter">
+            <p class="title">Genres</p>
+            <div v-for="genreLoop of genres" :key="genreLoop.id">
+              <input type="checkbox" v-model="genre" :id="'genre_' + genreLoop.id" :value="genreLoop.id"  />
+              <label :for="'genre_' + genreLoop.id">{{ genreLoop.name }}</label>
+            </div>
           </div>
         </div>
       </div>
@@ -51,7 +55,7 @@
         <div class="pagination">
           <ul>
             <li><a @click="changePage(1)" :class="currentPage == 1 ? 'not-active' : ''">1</a></li>
-            <li v-if="total_pages > 4">...</li>
+            <li v-if="total_pages > 4 && currentPage != 1">...</li>
             <li v-if="total_pages > 4" v-for="page of other_pages" :key="page.id"><a v-if="page < getTotalPages" @click="changePage(page)" :class="currentPage === page ? 'not-active' : ''">{{ page }}</a></li>
             <li v-if="total_pages === 3"><a @click="changePage(2)" :class="currentPage == 2 ? 'not-active' : ''">{{ 2 }}</a></li>
             <li v-if="total_pages === 4"><a @click="changePage(2)" :class="currentPage == 2 ? 'not-active' : ''">{{ 2 }}</a></li>
@@ -105,6 +109,8 @@ export default {
         this.currentPage = refreshPage.query.page
         if (this.currentPage - 1 > 2 && this.currentPage - 1 < this.total_pages) {
           this.other_pages = [this.currentPage - 1, this.currentPage, parseInt(this.currentPage) + 1]
+        } else {
+          this.other_pages = [2, 3, 4]
         }
         this.getMovies()
       }
@@ -137,10 +143,12 @@ export default {
     }
     if (this.$route.query.genres) {
       this.genre = []
-      if (this.$route.query.genres.length > 1) {
-        this.genre = this.$route.query.genres
+      if (Array.isArray(this.$route.query.genres)) {
+        this.$route.query.genres.forEach(element => {
+          this.genre.push(parseInt(element))
+        })
       } else {
-        this.genre.push(this.$route.query.genres)
+        this.genre.push(parseInt(this.$route.query.genres))
       }
     }
     if (this.$route.query.sorted) {
@@ -281,6 +289,14 @@ h2 {
 
   .filter-content {
     display: block;
+
+    .release-date {
+      margin-bottom: 30px;
+    }
+
+    .genres-filter {
+      margin-bottom: 8px;
+    }
   }
 
   .filter-title {

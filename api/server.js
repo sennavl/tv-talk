@@ -23,7 +23,7 @@ if (!process.env.AUTH0_DOMAIN || !process.env.AUTH0_AUDIENCE) {
 }
 
 // create database
-mongoose.connect('mongodb://localhost/tvtalk');
+mongoose.connect(`mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@ds153763.mlab.com:53763/tvtalk`);
 const db = mongoose.connection;
 db.on('error', () => console.error('connection error:'));
 db.once('open', () => console.log('connected to database'));
@@ -400,6 +400,7 @@ app.get('/subEvents/ended', (req, res) => {
 })
 
 app.get('/singleSubEvent/:id', (req, res) => {
+	console.log(req.params)
 	SubEvent
 		.findOne({ _id: req.params.id })
 		.then((subevent) => {
